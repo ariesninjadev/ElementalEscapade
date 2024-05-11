@@ -7,6 +7,8 @@ public class Player extends Mover
 {
     private static final int jumpStrength = 16;
     
+    Thread thread;
+    
     public void act() 
     {
         checkKeys();        
@@ -46,6 +48,32 @@ public class Player extends Mover
         else {
             fall();
         }
+    }
+    
+    public void startLocalPost()
+    {
+        thread = new Thread(new Runnable() 
+        {
+            public void run() 
+            {
+                while (true) {
+                    try
+                    {
+                        Network.postLocation(getX(),getY());
+                    }
+                    catch (java.io.IOException ioe)
+                    {
+                        ioe.printStackTrace();
+                    }
+                }
+            }
+        });
+        thread.start();
+    }
+    
+    public void stopLocalPost()
+    {
+        thread.stop();
     }
 }
 
