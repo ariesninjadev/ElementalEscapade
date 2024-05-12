@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
  */
 public class Network  
 {
+    
+    final static String host = "http://localhost:9898/";
 
     /**
      * Constructor for objects of class Network
@@ -79,12 +81,12 @@ public class Network
     
     public static String joinGame(String uid) throws IOException {
         id = uid;
-        pid = get("http://klay.lol:9898/api/join/"+id);
+        pid = get(host+"api/join/"+id);
         return (pid);
     }
     
     public static String postLocation(int x, int y) throws IOException {
-        return (get("http://klay.lol:9898/api/set/"+id+"/"+pid+"/"+x+"/"+y+"/"+"false"));
+        return (get(host+"api/set/"+id+"/"+pid+"/"+x+"/"+y+"/"+"false"));
     }
     
     public static int[] getPartnerLocation() throws IOException {
@@ -94,10 +96,9 @@ public class Network
         } else {
             qid = "1";
         }
-        String data = get("http://klay.lol:9898/api/get/"+id+"/"+qid);
-        int x = extractValue(data, "x");
-        int y = extractValue(data, "y");
-        return (new int[]{x,y});
+        String data = get(host+"api/get/"+id+"/"+qid);
+        String[] xdata = data.split(",");
+        return (new int[]{Integer.parseInt(xdata[0]),Integer.parseInt(xdata[1])});
     }
     
 }
