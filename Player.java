@@ -17,14 +17,10 @@ public class Player extends Mover
     
     private void checkKeys()
     {
-        if (Greenfoot.isKeyDown("left") )
-        {
-            //setImage("pengu-left.png");
+        if (Greenfoot.isKeyDown("left") && atWall() != -1) {
             moveLeft();
         }
-        if (Greenfoot.isKeyDown("right") )
-        {
-            //setImage("pengu-right.png");
+        if (Greenfoot.isKeyDown("right") && atWall() != 1) {
             moveRight();
         }
         if (Greenfoot.isKeyDown("up") )
@@ -50,6 +46,18 @@ public class Player extends Mover
         }
     }
     
+    private int atWall()
+    {
+        if (getX() < (getImage().getWidth()/2))
+        {
+            return -1;
+        } else if (getX() > getWorld().getWidth()-(getImage().getWidth()/2))
+        {
+            return 1;
+        }
+        return 0;
+    }
+    
     public void startLocalPost()
     {
         thread = new Thread(new Runnable() 
@@ -73,7 +81,9 @@ public class Player extends Mover
     
     public void stopLocalPost()
     {
-        thread.stop();
+        try {
+            thread.stop();
+        } catch (java.lang.NullPointerException npe) {}
     }
 }
 

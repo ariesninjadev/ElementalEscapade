@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=TextEngine
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ TextEngine\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=world
+comment1.target=TextEngine(greenfoot.World)
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ TextEngine\r\n
+comment2.params=m_text\ x\ y\ color\ bgcolor\ size
+comment2.target=void\ show(java.lang.String,\ int,\ int,\ greenfoot.Color,\ greenfoot.Color,\ int)
+comment2.text=\r\n\ An\ example\ of\ a\ method\ -\ replace\ this\ comment\ with\ your\ own\r\n\ \r\n\ @param\ \ y\ \ \ a\ sample\ parameter\ for\ a\ method\r\n\ @return\ \ \ \ \ the\ sum\ of\ x\ and\ y\ \r\n
+numComments=3

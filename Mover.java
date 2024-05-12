@@ -8,7 +8,7 @@ import greenfoot.*;
 public class Mover extends Actor
 {
     private static final int acceleration = 1;      // down (gravity)
-    private static final int speed = 7;             // running speed (sideways)
+    public static final int speed = 7;             // running speed (sideways)
     
     private int vSpeed = 0;                         // current vertical speed
     
@@ -26,6 +26,9 @@ public class Mover extends Actor
     public boolean onGround()
     {
         Object under = getOneObjectAtOffset(0, getImage().getHeight()/2 , null);
+        if (under instanceof Partner) {
+            return false;
+        }
         return under != null;
     }
 

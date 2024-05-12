@@ -6,7 +6,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * @author (your name) 
  * @version (a version number or a date)
  */
-public class Alert extends Actor
+public class Text extends Actor
 {
     /**
      * Act - do whatever the Alert wants to do. This method is called whenever
@@ -18,6 +18,6 @@ public class Alert extends Actor
     }
     
     public void display(String text, Color color, Color bgcolor, int size) {
-        setImage(new GreenfootImage(text, size, bgcolor, color));
+        setImage(new GreenfootImage(text, size, color, bgcolor));
     }
 }

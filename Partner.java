@@ -44,6 +44,8 @@ public class Partner extends Mover
     
     public void stopGet()
     {
-        thread.stop();
+        try {
+            thread.stop();
+        } catch (java.lang.NullPointerException npe) {}
     }
 }
