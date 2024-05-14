@@ -31,7 +31,7 @@ public class Player extends Mover
         if (Greenfoot.isKeyDown("up") )
         {
             if (onGroundExclusive())
-            System.out.println("up");
+            //System.out.println("up");
                 jump();
         }
     }    

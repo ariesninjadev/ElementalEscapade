@@ -64,6 +64,7 @@ public class Mover extends Actor
         if (under1 instanceof Partner || under2 instanceof Partner || under3 instanceof Partner) {
             return false;
         }
+        System.out.println("asd");
         return (under1 != null) || (under2 != null) || (under3 != null);
     }
     
