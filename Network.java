@@ -13,7 +13,8 @@ import java.io.InputStreamReader;
 public class Network  
 {
     
-    final static String host = "http://localhost:9898/";
+    final static String host = "http://10.4.0.90:9898/";
+    // final static String host = "http://klay.lol:9898/";
 
     /**
      * Constructor for objects of class Network
