@@ -32,7 +32,10 @@ public class Lobby extends World
         addObject(me, 0, 800);
         addObject(you, 0, 800);
         
+        addObject(new CollidableTest(), 50, 310);
         addObject(new CollidableTest(), 150, 250);
+        addObject(new CollidableTest(), 250, 175);
+        addObject(new CollidableTest(), 350, 130);
         
         setPaintOrder(Player.class);
         

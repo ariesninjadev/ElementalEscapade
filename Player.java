@@ -12,7 +12,7 @@ public class Player extends Mover
     public void act() 
     {
         checkKeys();  
-        System.out.println(vSpeed);
+        //System.out.println(vSpeed);
         if (vSpeed >= 0) {
             checkFall();
         } else {
@@ -31,6 +31,7 @@ public class Player extends Mover
         if (Greenfoot.isKeyDown("up") )
         {
             if (onGroundExclusive())
+            System.out.println("up");
                 jump();
         }
     }    

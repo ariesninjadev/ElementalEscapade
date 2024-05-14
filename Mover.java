@@ -15,21 +15,36 @@ public class Mover extends Actor
 
     public void moveRight()
     {
+        if(atSide()) // Check Intersection
+            {
+                return; // Stop the rest of the check
+            }
         for(int step=0; step<=speed; step+=1) // For each pixel
         {
             setLocation(getX()+1, getY()); // Update Location
             if(atSide()) // Check Intersection
             {
                 setLocation(getX()-1, getY()); // Move the character back if touching
-                break; // Stop the rest of the check
+                return; // Stop the rest of the check
             }
         }
-        setLocation ( getX() + speed, getY() );
     }
     
     public void moveLeft()
     {
-        setLocation ( getX() - speed, getY() );
+        if(atSide()) // Check Intersection
+            {
+                return; // Stop the rest of the check
+            }
+        for(int step=0; step<=speed; step+=1) // For each pixel
+        {
+            setLocation(getX()-1, getY()); // Update Location
+            if(atSide()) // Check Intersection
+            {
+                setLocation(getX()+1, getY()); // Move the character back if touching
+                return; // Stop the rest of the check
+            }
+        }
     }
     
     public boolean onGround()
@@ -54,12 +69,12 @@ public class Mover extends Actor
     
     public boolean atSide()
     {
-        Object left1 = getOneObjectAtOffset(-getImage().getHeight()/2, getImage().getHeight()/2-2 , null);
+        Object left1 = getOneObjectAtOffset(-getImage().getHeight()/2, getImage().getHeight()/2-1 , null);
         Object left2 = getOneObjectAtOffset(-getImage().getHeight()/2, 0 , null);
-        Object left3 = getOneObjectAtOffset(-getImage().getHeight()/2, -getImage().getHeight()/2+2 , null);
-        Object right1 = getOneObjectAtOffset(getImage().getHeight()/2, getImage().getHeight()/2-2 , null);
+        Object left3 = getOneObjectAtOffset(-getImage().getHeight()/2, -getImage().getHeight()/2+1 , null);
+        Object right1 = getOneObjectAtOffset(getImage().getHeight()/2, getImage().getHeight()/2-1 , null);
         Object right2 = getOneObjectAtOffset(getImage().getHeight()/2, 0 , null);
-        Object right3 = getOneObjectAtOffset(getImage().getHeight()/2, -getImage().getHeight()/2+2 , null);
+        Object right3 = getOneObjectAtOffset(getImage().getHeight()/2, -getImage().getHeight()/2+1 , null);
         if (left1 instanceof Partner || left2 instanceof Partner || left3 instanceof Partner
          || right1 instanceof Partner || right2 instanceof Partner || right3 instanceof Partner) {
             return false;
@@ -88,7 +103,7 @@ public class Mover extends Actor
         for(int step=0; step!=vSpeed; step+=dir) // For each pixel
         {
             setLocation(getX(), getY() + dir); // Update Location
-            if(getOneIntersectingObject(null)!=null) // Check Intersection
+            if(getOneIntersectingObject(null)!=null && !(getOneIntersectingObject(null) instanceof Partner)) // Check Intersection
             {
                 setLocation(getX(), getY()-dir); // Move the character back if touching
                 vSpeed=0; // Cancel Vertical Momentum

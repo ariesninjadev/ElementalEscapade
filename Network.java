@@ -14,8 +14,9 @@ public class Network
 {
     
     // final static String host = "http://10.4.0.90:9898/"; // Comp Sci Room
-    final static String host = "http://10.2.0.118:9898/"; // Library
+    // final static String host = "http://10.2.0.118:9898/"; // Library
     // final static String host = "http://klay.lol:9898/";
+    final static String host = "http://localhost:9898/";
 
     /**
      * Constructor for objects of class Network
