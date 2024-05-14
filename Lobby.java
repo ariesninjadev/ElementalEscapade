@@ -32,6 +32,8 @@ public class Lobby extends World
         addObject(me, 0, 800);
         addObject(you, 0, 800);
         
+        addObject(new CollidableTest(), 150, 250);
+        
         setPaintOrder(Player.class);
         
         String input = Greenfoot.ask("Game to join");

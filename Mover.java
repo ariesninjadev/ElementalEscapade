@@ -1,4 +1,4 @@
-import greenfoot.*;
+    import greenfoot.*;
 
 /**
  * The class Mover provides some basic movement methods. Use this as a superclass
@@ -10,7 +10,7 @@ public class Mover extends Actor
     private static final int acceleration = 1;      // down (gravity)
     public static final int speed = 7;             // running speed (sideways)
     
-    private int vSpeed = 0;                         // current vertical speed
+    protected int vSpeed = 0;                         // current vertical speed
     
 
     public void moveRight()
@@ -31,7 +31,16 @@ public class Mover extends Actor
         }
         return under != null;
     }
-
+    
+    public boolean touchingCeil()
+    {
+        Object above = getOneObjectAtOffset(0, -getImage().getHeight()/2 , null);
+        if (above instanceof Partner) {
+            return false;
+        }
+        return above != null;
+    }
+    
     public void setVSpeed(int speed)
     {
         vSpeed = speed;
@@ -39,10 +48,18 @@ public class Mover extends Actor
     
     public void fall()
     {
-        setLocation ( getX(), getY() + vSpeed);
-        vSpeed = vSpeed + acceleration;
-        if ( atBottom() )
-            gameEnd();
+        vSpeed+=1; // add gravity
+        int dir=(int)Math.signum(vSpeed); // determine direction
+        for(int step=0; step!=vSpeed; step+=dir) // for each pixel-step
+        {
+            setLocation(getX(), getY()+dir); // move 
+            if(getOneIntersectingObject(null)!=null) // check intersection
+            {
+                setLocation(getX(), getY()-dir); // resistance (step-back)
+                vSpeed=0; // stopped
+                break; // forces exit out of 'for' loop
+            }
+        }
     }
     
     private boolean atBottom()

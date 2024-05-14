@@ -11,8 +11,13 @@ public class Player extends Mover
     
     public void act() 
     {
-        checkKeys();        
-        checkFall();
+        checkKeys();  
+        System.out.println(vSpeed);
+        if (vSpeed >= 0) {
+            checkFall();
+        } else {
+            checkRoof();
+        }
     }
     
     private void checkKeys()
@@ -42,6 +47,15 @@ public class Player extends Mover
             setVSpeed(0);
         }
         else {
+            fall();
+        }
+    }
+    
+    private void checkRoof()
+    {
+        if (touchingCeil()) {
+            setVSpeed(0);
+        } else {
             fall();
         }
     }
