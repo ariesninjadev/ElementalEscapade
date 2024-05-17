@@ -12,8 +12,8 @@ public class Menu extends World
     MenuBG menu1 = new MenuBG();
     MenuBG menu2 = new MenuBG();
     
-    public void joinLobby() throws java.io.IOException {
-        Greenfoot.setWorld(new Lobby());
+    public void joinLobby(boolean mp) throws java.io.IOException {
+        Greenfoot.setWorld(new Lobby(mp));
     }
     
     /**
@@ -36,7 +36,20 @@ public class Menu extends World
             {
                 try
                 {
-                    joinLobby();
+                    joinLobby(false);
+                }
+                catch (java.io.IOException ioe)
+                {
+                    ioe.printStackTrace();
+                }
+            }
+        ));
+        
+        stat.show("menu-coop.png",120,240,true,(() -> 
+            {
+                try
+                {
+                    joinLobby(true);
                 }
                 catch (java.io.IOException ioe)
                 {

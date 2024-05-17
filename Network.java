@@ -13,8 +13,8 @@ import java.io.InputStreamReader;
 public class Network  
 {
     
-    // final static String host = "http://10.4.0.90:9898/"; // Comp Sci Room
-    final static String host = "http://10.2.0.118:9898/"; // Library
+    final static String host = "http://10.4.0.90:9898/"; // Comp Sci Room
+    // final static String host = "http://10.2.0.118:9898/"; // Library
     // final static String host = "http://klay.lol:9898/";
     // final static String host = "http://localhost:9898/";
 
@@ -84,7 +84,11 @@ public class Network
     
     public static String joinGame(String uid) throws IOException {
         id = uid;
-        pid = get(host+"api/join/"+id);
+        try {
+            pid = get(host+"api/join/"+id);
+        } catch (Exception e) {
+            return "-1";
+        }
         return (pid);
     }
     

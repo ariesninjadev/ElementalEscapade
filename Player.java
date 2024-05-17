@@ -18,6 +18,8 @@ public class Player extends Mover
         } else {
             checkRoof();
         }
+        
+        Greenfoot.setSpeed( 50 );
     }
     
     private void checkKeys()
