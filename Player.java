@@ -5,12 +5,17 @@ import greenfoot.*;
  */
 public class Player extends Mover
 {
-    private static final int jumpStrength = 16;
+    private static final int jumpStrength = 10;
+    
+    public int jumpCount = 0;
+    
+    public boolean upPressed = false;
     
     Thread thread;
     
     public void act() 
     {
+        Greenfoot.setSpeed( 50 );
         checkKeys();  
         //System.out.println(vSpeed);
         if (vSpeed >= 0) {
@@ -18,8 +23,6 @@ public class Player extends Mover
         } else {
             checkRoof();
         }
-        
-        Greenfoot.setSpeed( 50 );
     }
     
     private void checkKeys()
@@ -32,9 +35,19 @@ public class Player extends Mover
         }
         if (Greenfoot.isKeyDown("up") )
         {
-            if (onGroundExclusive())
-            //System.out.println("up");
+            if (upPressed) {return;}
+            upPressed = true;
+            if (onGroundExclusive() || this.jumpCount <= 1) {
+                this.jumpCount++;
+                if (!onGroundExclusive() && this.jumpCount == 1) {
+                    this.jumpCount++;
+                }
                 jump();
+            }
+        }
+        if (!Greenfoot.isKeyDown("up") )
+        {
+            upPressed = false;
         }
     }    
     
@@ -48,6 +61,7 @@ public class Player extends Mover
     {
         if (onGround()) {
             setVSpeed(0);
+            jumpCount = 0;
         }
         else {
             fall();

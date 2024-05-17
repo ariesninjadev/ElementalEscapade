@@ -17,6 +17,7 @@ public class MenuBG extends Actor
      */
     public void act()
     {
+        Greenfoot.setSpeed( 50 );
         if (fSkip) {
             setLocation(getX()+1,getY());
             if (getX() >= 960) {
