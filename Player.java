@@ -183,7 +183,7 @@ public class Player extends Mover
     }
     
     public Player() {
-        int sizer = -2;
+        int sizer = 2;
         GreenfootImage img = new GreenfootImage(this.getImage());
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
         setImage(img);
