@@ -27,17 +27,27 @@ public class StaticEngine
      * @param  y   a sample parameter for a method
      * @return     the sum of x and y 
      */
-    public void show(String img, int x, int y)
+    public Static show(String img, int x, int y)
     {
         Static staticX = new Static();
         world.addObject(staticX, x, y);
         staticX.display(img);
+        return staticX;
     }
     
-    public void show(String img, int x, int y, boolean hoverable, Runnable onclick)
+    public Static show(String img, int x, int y, boolean hoverable, Runnable onclick)
     {
         Static staticX = new Static();
         world.addObject(staticX, x, y);
         staticX.display(img,hoverable,onclick);
+        return staticX;
+    }
+    
+    public Static show(String img, int x, int y, String action)
+    {
+        Static staticX = new Static();
+        world.addObject(staticX, x, y);
+        staticX.display(img,action);
+        return staticX;
     }
 }

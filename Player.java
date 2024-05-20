@@ -5,66 +5,102 @@ import greenfoot.*;
  */
 public class Player extends Mover
 {
-    private static final int jumpStrength = 10;
+    private String keyForUp = null;
+    private boolean upPressed = false;
+    private boolean leftPressed = false;
+    private boolean rightPressed = false;
     
-    public int jumpCount = 0;
-    
-    public boolean upPressed = false;
+    public boolean sprinting = false;
+    public String sprintKey = null;
+    private int sprintClock = 0;
     
     Thread thread;
     
     public void act() 
     {
-        Greenfoot.setSpeed( 50 );
+        Greenfoot.setSpeed( 47 );
+        
+        if (sprintClock > 0) {
+            sprintClock--;
+        }
+        if (headBoltTimer > 0) {
+            headBoltTimer--;
+        }
+        
         checkKeys();  
-        //System.out.println(vSpeed);
+        
         if (vSpeed >= 0) {
             checkFall();
         } else {
             checkRoof();
         }
+        if (!onGroundExclusive() && this.jumpCount == 0) {
+            this.jumpCount = 1;
+        }
     }
     
     private void checkKeys()
     {
-        if (Greenfoot.isKeyDown("left") && atWall() != -1) {
-            moveLeft();
+        if (Greenfoot.isKeyDown("a") && atWall() != -1) {
+            if (!rightPressed && sprintClock > 0 && sprintKey == "a") {
+                sprinting = true;
+            }
+            sprintKey = "a";
+            if (!rightPressed) {
+                sprintClock = 11;
+            }
+            rightPressed = true;
+            moveLeft(sprinting);
         }
-        if (Greenfoot.isKeyDown("right") && atWall() != 1) {
-            moveRight();
+        if (Greenfoot.isKeyDown("d") && atWall() != 1) {
+            if (!leftPressed && sprintClock > 0 && sprintKey == "d") {
+                sprinting = true;
+            }
+            sprintKey = "d";
+            if (!leftPressed) {
+                sprintClock = 11;
+            }
+            leftPressed = true;
+            moveRight(sprinting);
         }
-        if (Greenfoot.isKeyDown("up") )
+        if (!Greenfoot.isKeyDown("a")) {
+            rightPressed = false;
+        }
+        if (!Greenfoot.isKeyDown("d")) {
+            leftPressed = false;
+        }
+        if (sprintKey == null || !Greenfoot.isKeyDown(sprintKey)) {
+            sprinting = false;
+        }
+        if (Greenfoot.isKeyDown("space"))
         {
-            if (upPressed) {return;}
+            if (upPressed || headBoltTimer > 0) {
+                return;
+            }
             upPressed = true;
-            if (onGroundExclusive() || this.jumpCount <= 1) {
+            if (this.jumpCount <= 1) {
                 this.jumpCount++;
-                if (!onGroundExclusive() && this.jumpCount == 1) {
-                    this.jumpCount++;
-                }
                 jump();
             }
         }
-        if (!Greenfoot.isKeyDown("up") )
+        if (!Greenfoot.isKeyDown("space"))
         {
             upPressed = false;
         }
     }    
     
-    private void jump()
-    {
-        setVSpeed(-jumpStrength);
-        fall();
-    }
-    
     private void checkFall()
     {
         if (onGround()) {
             setVSpeed(0);
-            jumpCount = 0;
+            this.jumpCount = 0;
+            upPressed = false;
         }
         else {
-            fall();
+            if (!fall()) {
+                this.jumpCount = 0;
+                upPressed = false;
+            }
         }
     }
     
@@ -79,10 +115,10 @@ public class Player extends Mover
     
     private int atWall()
     {
-        if (getX() < (getImage().getWidth()/2))
+        if (getX() < (getImage().getWidth()/2+2))
         {
             return -1;
-        } else if (getX() > getWorld().getWidth()-(getImage().getWidth()/2))
+        } else if (getX() > (getWorld().getWidth()-(getImage().getWidth()/2))-2)
         {
             return 1;
         }

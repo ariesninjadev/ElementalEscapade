@@ -6,11 +6,21 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * @author (your name) 
  * @version (a version number or a date)
  */
-public class Lobby extends World
+public class Lobby extends MAPS
 {
 
     Player me;
     Partner you;
+    
+    Static pressE;
+        
+    boolean inRange = false;
+    
+    TextEngine text = new TextEngine(this);
+    StaticEngine stat = new StaticEngine(this);
+    
+    int playerNum = 0;
+    boolean arrowShown = false;
     
     /**
      * Constructor for objects of class Lobby.
@@ -18,28 +28,23 @@ public class Lobby extends World
      */
     public Lobby(boolean mp) throws java.io.IOException
     {    
-        super(600, 400, 1, false); 
+        //super(600, 400, 1, false); 
         
-        int playerNum = 0;
+        GreenfootImage background = getBackground();
+        background.setColor(new Color(212,245,255));
+        background.fillRect(0,0,getWidth(),getHeight());
         
-        TextEngine text = new TextEngine(this);
-        
-        addObject(new Ground(), 300, 400);
+        loadWorld(Data.lobby);
         
         me = new Player();
-        addObject(me, 0, 800);
-        
-        if (mp) {
-            you = new Partner();
-            addObject(you, 0, 800);
-        }
+        addObject(me, 0, 1000);
         
         setPaintOrder(Player.class);
         
         if (mp) {
             
             you = new Partner();
-            addObject(you, 0, 800);
+            addObject(you, 0, 1000);
             String input = Greenfoot.ask("Game to join");
             String response = Network.joinGame(input);
             
@@ -53,17 +58,17 @@ public class Lobby extends World
                 return;
             } else if (response.equals("1")) {
                 text.show(" Joined as player 1. ", 300, 20, Color.RED, new Color(0,0,0), 24);
-                me.setImage("player.jpeg");
-                you.setImage("partner.jpeg");
-                me.setLocation(150, 200);
+                me.setImage("player.png");
+                you.setImage("partner.png");
+                me.setLocation(280, 200);
                 playerNum = 1;
                 me.startLocalPost();
                 you.partnerGet();
             } else if (response.equals("2")) {
                 text.show(" Joined as player 2. ", 300, 20, Color.BLUE, new Color(0,0,0), 24);
-                me.setImage("partner.jpeg");
-                you.setImage("player.jpeg");
-                me.setLocation(450, 200);
+                me.setImage("partner.png");
+                you.setImage("player.png");
+                me.setLocation(320, 200);
                 playerNum = 2;
                 me.startLocalPost();
                 you.partnerGet();
@@ -72,16 +77,10 @@ public class Lobby extends World
             }
             
         } else {
-            me.setLocation(150, 200);
+            me.setLocation(300, 200);
+            stat.show("darrow.png",550,310,"hover");
         }
-        
-        // Draw Lobby
-        
-        addObject(new Ground(), 300, 400);
-        addObject(new CollidableTest(), 50, 310);
-        addObject(new CollidableTest(), 150, 250);
-        addObject(new CollidableTest(), 250, 175);
-        addObject(new CollidableTest(), 350, 130);
+
     }
     
     public void stopped()
@@ -90,5 +89,26 @@ public class Lobby extends World
         me.stopLocalPost();
         you.stopGet();
         } catch (Exception e) {}
+    }
+    
+    public void act() {
+        try {
+            if (you.getY() != 1000 && playerNum == 1 && !arrowShown) {
+                //System.out.println(you.getY());
+                stat.show("darrow.png",550,310,"hover");
+                arrowShown = true;
+            }
+        } catch (Exception e) {}
+        if (me.getX() > 480 && me.getX() < 620 && me.getY() > 240 && arrowShown)
+        {
+            if (!inRange) {
+                pressE = stat.show("press-e.png",534,10);
+                inRange = true;
+            }
+        } else if (inRange) {
+            removeObject(pressE);
+            pressE = null;
+            inRange = false;
+        }
     }
 }

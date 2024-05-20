@@ -1,127 +1,224 @@
-    import greenfoot.*;
+import java.util.List;
+
+import greenfoot.*;
 
 /**
- * The class Mover provides some basic movement methods. Use this as a superclass
- * for other actors that should be able to move left and right, jump up and fall 
+ * The class Mover provides some basic movement methods. Use this as a
+ * superclass
+ * for other actors that should be able to move left and right, jump up and fall
  * down.
  */
-public class Mover extends Actor
-{
-    private static final int acceleration = 1;      // down (gravity)
-    public static final int speed = 3;             // running speed (sideways)
-    
-    protected int vSpeed = 0;                         // current vertical speed
-    
+public class Mover extends Actor {
+    private static final int acceleration = 1;
+    public static final int speed = 2;
+    private static final int jumpStrength = 8;
+    protected int jumpCount = 0;
+    protected int headBoltTimer = 0;
 
-    public void moveRight()
-    {
-        if(atSide()) // Check Intersection
-            {
-                return; // Stop the rest of the check
-            }
-        for(int step=0; step<=speed; step+=1) // For each pixel
-        {
-            setLocation(getX()+1, getY()); // Update Location
-            if(atSide()) // Check Intersection
-            {
-                setLocation(getX()-1, getY()); // Move the character back if touching
-                return; // Stop the rest of the check
-            }
-        }
+    protected int vSpeed = 0;
+
+    protected void jump() {
+        setVSpeed(-jumpStrength);
+        fall();
     }
-    
-    public void moveLeft()
-    {
-        if(atSide()) // Check Intersection
-            {
-                return; // Stop the rest of the check
-            }
-        for(int step=0; step<=speed; step+=1) // For each pixel
-        {
-            setLocation(getX()-1, getY()); // Update Location
-            if(atSide()) // Check Intersection
-            {
-                setLocation(getX()+1, getY()); // Move the character back if touching
-                return; // Stop the rest of the check
+
+    private boolean isColliding(int xOffset, int yOffset, Class<Actor> cls) {
+        List<Actor> actors = getObjectsAtOffset(xOffset, yOffset, cls);
+        for (Actor a : actors) {
+            if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                return true;
             }
         }
+        return false;
     }
-    
-    public boolean onGround()
-    {
-        Object under = getOneObjectAtOffset(0, getImage().getHeight()/2 , null);
-        if (under instanceof Partner) {
-            return false;
+
+    public void moveRight(boolean sprinting) {
+        int s = sprinting ? speed * 2 : speed;
+        for (int step = 0; step <= s; step += 1) {
+            setLocation(getX() + 1, getY());
+            List<Actor> actors = getIntersectingObjects(null);
+            boolean colliding = false;
+            for (Actor a : actors) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+            if (colliding) {
+                setLocation(getX() - 1, getY());
+                if (jumpCount == 0) {
+                    jump();
+                    jumpCount++;
+                }
+                return;
+            }
         }
-        return under != null;
     }
-    
-    public boolean onGroundExclusive()
-    {
-        Object under1 = getOneObjectAtOffset(-getImage().getHeight()/2, getImage().getHeight()/2 , null);
-        Object under2 = getOneObjectAtOffset(0, getImage().getHeight()/2 , null);
-        Object under3 = getOneObjectAtOffset(getImage().getHeight()/2, getImage().getHeight()/2 , null);
-        if (under1 instanceof Partner || under2 instanceof Partner || under3 instanceof Partner) {
-            return false;
+
+    public void moveLeft(boolean sprinting) {
+        int s = sprinting ? speed * 2 : speed;
+        for (int step = 0; step <= s; step += 1) {
+            setLocation(getX() - 1, getY());
+            List<Actor> actors = getIntersectingObjects(null);
+            boolean colliding = false;
+            for (Actor a : actors) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+            if (colliding) {
+                setLocation(getX() + 1, getY());
+                if (jumpCount == 0) {
+                    jump();
+                    jumpCount++;
+                }
+                return;
+            }
         }
-        //System.out.println("asd");
-        return (under1 != null) || (under2 != null) || (under3 != null);
     }
-    
-    public boolean atSide()
-    {
-        Object left1 = getOneObjectAtOffset(-getImage().getHeight()/2, getImage().getHeight()/2-1 , null);
-        Object left2 = getOneObjectAtOffset(-getImage().getHeight()/2, 0 , null);
-        Object left3 = getOneObjectAtOffset(-getImage().getHeight()/2, -getImage().getHeight()/2+1 , null);
-        Object right1 = getOneObjectAtOffset(getImage().getHeight()/2, getImage().getHeight()/2-1 , null);
-        Object right2 = getOneObjectAtOffset(getImage().getHeight()/2, 0 , null);
-        Object right3 = getOneObjectAtOffset(getImage().getHeight()/2, -getImage().getHeight()/2+1 , null);
-        if (left1 instanceof Partner || left2 instanceof Partner || left3 instanceof Partner
-         || right1 instanceof Partner || right2 instanceof Partner || right3 instanceof Partner) {
-            return false;
-        }
-        return (left1 != null) || (left2 != null) || (left3 != null) || (right1 != null) || (right2 != null) || (right3 != null);
+
+    public boolean onGround() {
+        return isColliding(0, getImage().getHeight() / 2, null);
     }
-    
-    public boolean touchingCeil()
-    {
-        Object above = getOneObjectAtOffset(0, -getImage().getHeight()/2 , null);
-        if (above instanceof Partner) {
-            return false;
+
+    public boolean onGroundExclusive() {
+        List<Actor> under1 = getObjectsAtOffset(-getImage().getWidth() / 2, getImage().getHeight() / 2 + 1, null);
+        List<Actor> under2 = getObjectsAtOffset(0, getImage().getHeight() / 2 + 1, null);
+        List<Actor> under3 = getObjectsAtOffset(getImage().getWidth() / 2, getImage().getHeight() / 2 + 1, null);
+        boolean colliding = false;
+        for (Actor a : under1) {
+            if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                colliding = true;
+                break;
+            }
         }
-        return above != null;
+        if (!colliding) {
+            for (Actor a : under2) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        if (!colliding) {
+            for (Actor a : under3) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        return colliding;
+    }
+
+    public boolean atSide() {
+        List<Actor> left1 = getObjectsAtOffset(-getImage().getWidth() / 2, getImage().getHeight() / 2 - 1, null);
+        List<Actor> left2 = getObjectsAtOffset(-getImage().getWidth() / 2, 0, null);
+        List<Actor> left3 = getObjectsAtOffset(-getImage().getWidth() / 2, -getImage().getHeight() / 2 + 1, null);
+        List<Actor> right1 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, getImage().getHeight() / 2 - 1, null);
+        List<Actor> right2 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, 0, null);
+        List<Actor> right3 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, -getImage().getHeight() / 2 + 1, null);
+    
+        boolean colliding = false;
+        for (Actor a : left1) {
+            if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                colliding = true;
+                break;
+            }
+        }
+        if (!colliding) {
+            for (Actor a : left2) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        if (!colliding) {
+            for (Actor a : left3) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        if (!colliding) {
+            for (Actor a : right1) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        if (!colliding) {
+            for (Actor a : right2) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        if (!colliding) {
+            for (Actor a : right3) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    colliding = true;
+                    break;
+                }
+            }
+        }
+        return colliding;
+    }
+
+    public boolean spaceUpLeft() {
+        Object n = getOneObjectAtOffset(-getImage().getWidth() / 2 - 1, (-getImage().getWidth() / 2 - 1), null);
+
+        if (n instanceof Partner) {
+            return true;
+        }
+
+        if (n instanceof Tile && !((Tile) n).isCollidable()) {
+            return true;
+        }
+
+        return n == null;
+    }
+
+    public boolean touchingCeil() {
+        return isColliding(0, -getImage().getHeight() / 2, null);
+    }
+
+    public boolean fall() {
+        vSpeed += acceleration;
+        int dir = (int) Math.signum(vSpeed);
+        for (int step = 0; step != vSpeed; step += dir) {
+            setLocation(getX(), getY() + dir);
+            List<Actor> actors = getIntersectingObjects(null);
+            for (Actor a : actors) {
+                if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                    setLocation(getX(), getY() - dir);
+                    vSpeed = 0;
+                    if (!onGroundExclusive()) {
+                        headBoltTimer = 20;
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean atBottom() {
+        return getY() >= getWorld().getHeight() - 2;
+    }
+
+    private void gameEnd() {
+        Greenfoot.stop();
     }
     
     public void setVSpeed(int speed)
     {
         vSpeed = speed;
     }
-    
-    public void fall()
-    {
-        vSpeed += acceleration; // Modify Speed
-        int dir=(int)Math.signum(vSpeed); // Get Direction
-        for(int step=0; step!=vSpeed; step+=dir) // For each pixel
-        {
-            setLocation(getX(), getY() + dir); // Update Location
-            if(getOneIntersectingObject(null)!=null && !(getOneIntersectingObject(null) instanceof Partner)) // Check Intersection
-            {
-                setLocation(getX(), getY()-dir); // Move the character back if touching
-                vSpeed=0; // Cancel Vertical Momentum
-                break; // Stop the rest of the check
-            }
-        }
-    }
-    
-    private boolean atBottom()
-    {
-        return getY() >= getWorld().getHeight() - 2;
-    }
-    
-    private void gameEnd()
-    {
-        Greenfoot.stop();
-    }
-
 
 }

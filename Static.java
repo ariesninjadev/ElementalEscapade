@@ -9,10 +9,14 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 public class Static extends Actor
 {
     
-    boolean watchForHover = false;
-    boolean mouseOver = false;
+    private boolean watchForHover = false;
+    private boolean hover = false;
+    private boolean mouseOver = false;
+    private int origin = 0;
+    private boolean direction = true;
     private GreenfootImage image;
-    Runnable onClick;
+    private Runnable onClick;
+    private boolean clock = true;
     
     /**
      * Act - do whatever the Static wants to do. This method is called whenever
@@ -20,6 +24,14 @@ public class Static extends Actor
      */
     public void act()
     {
+        clock = !clock;
+        if (hover && clock) {
+            int scale = direction ? 1 : -1;
+            setLocation(getX(),getY()+scale);
+            if (getY()==origin+(4*scale)) {
+                direction = !direction;
+            }
+        }
         if (!watchForHover) {
             return;
         }
@@ -50,5 +62,11 @@ public class Static extends Actor
         image = getImage();
         watchForHover = hoverable;
         this.onClick = onClick;
+    }
+    
+    public void display(String text, String action) {
+        origin = getY();
+        setImage(text);
+        hover = true;
     }
 }

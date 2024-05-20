@@ -8,10 +8,11 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Tile extends Actor
 {
-    /**
-     * Act - do whatever the Tile wants to do. This method is called whenever
-     * the 'Act' or 'Run' button gets pressed in the environment.
-     */
+    
+    public boolean isCollidable() {
+        return true;
+    }
+    
     public void act()
     {
         // Add your action code here.
