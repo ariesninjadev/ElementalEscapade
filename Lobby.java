@@ -79,6 +79,7 @@ public class Lobby extends MAPS
         } else {
             me.setLocation(300, 200);
             stat.show("darrow.png",550,310,"hover");
+            arrowShown = true;
         }
 
     }
