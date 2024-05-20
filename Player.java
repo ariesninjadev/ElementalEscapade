@@ -14,17 +14,33 @@ public class Player extends Mover
     public String sprintKey = null;
     private int sprintClock = 0;
     
+    private GreenfootImage image;
+    
     Thread thread;
+    
+    private boolean facing = true;
+    private boolean facingProc = true;
+    
+    private boolean idle = true;
+    private int idleClock = 0;
     
     public void act() 
     {
         Greenfoot.setSpeed( 47 );
+        idleClock++;
         
         if (sprintClock > 0) {
             sprintClock--;
         }
         if (headBoltTimer > 0) {
             headBoltTimer--;
+        }
+        
+        if (facing != facingProc) {
+            GreenfootImage img = getImage();
+            img.mirrorHorizontally();
+            setImage(img);
+            facingProc = facing;
         }
         
         checkKeys();  
@@ -50,6 +66,8 @@ public class Player extends Mover
                 sprintClock = 11;
             }
             rightPressed = true;
+            facing = false;
+            idle = false;
             moveLeft(sprinting);
         }
         if (Greenfoot.isKeyDown("d") && atWall() != 1) {
@@ -60,6 +78,8 @@ public class Player extends Mover
             if (!leftPressed) {
                 sprintClock = 11;
             }
+            facing = true;
+            idle = false;
             leftPressed = true;
             moveRight(sprinting);
         }
@@ -77,6 +97,7 @@ public class Player extends Mover
             if (upPressed || headBoltTimer > 0) {
                 return;
             }
+            idle = false;
             upPressed = true;
             if (this.jumpCount <= 1) {
                 this.jumpCount++;
@@ -86,6 +107,14 @@ public class Player extends Mover
         if (!Greenfoot.isKeyDown("space"))
         {
             upPressed = false;
+        }
+        if (!Greenfoot.isKeyDown("space") && 
+        !Greenfoot.isKeyDown("a") && 
+        !Greenfoot.isKeyDown("d") &&
+        onGroundExclusive())
+        {
+            idle = true;
+            idleClock = 0;
         }
     }    
     
@@ -151,6 +180,13 @@ public class Player extends Mover
         try {
             thread.stop();
         } catch (java.lang.NullPointerException npe) {}
+    }
+    
+    public Player() {
+        int sizer = -2;
+        GreenfootImage img = new GreenfootImage(this.getImage());
+        img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
+        setImage(img);
     }
 }
 
