@@ -52,10 +52,13 @@ public class Player extends Mover
         if (idle && idleClock > 120 && !idleAnim) {
             idleAnim = true;
             switchCostume(whoAmI+"-idle.png");
+            int s = facing ? -1 : 1;
+            setLocation(getX()-(2*s),getY()-6);
         } else if (!idle && idleAnim) {
             idleAnim = false;
             switchCostume(whoAmI+"-still.png");
-            setLocation(getX()+2,getY()-4);
+            int s = facing ? -1 : 1;
+            setLocation(getX()+(2*s),getY()+6);
         }
         if (facing != facingProc) {
             GreenfootImage img = getImage();
