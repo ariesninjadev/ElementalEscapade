@@ -23,6 +23,9 @@ public class Player extends Mover
     
     private boolean idle = true;
     private int idleClock = 0;
+    private boolean idleAnim = false;
+    
+    public String whoAmI = "player";
     
     public void act() 
     {
@@ -34,15 +37,8 @@ public class Player extends Mover
         }
         if (headBoltTimer > 0) {
             headBoltTimer--;
-        }
-        
-        if (facing != facingProc) {
-            GreenfootImage img = getImage();
-            img.mirrorHorizontally();
-            setImage(img);
-            facingProc = facing;
-        }
-        
+        } 
+      
         checkKeys();  
         
         if (vSpeed >= 0) {
@@ -52,6 +48,20 @@ public class Player extends Mover
         }
         if (!onGroundExclusive() && this.jumpCount == 0) {
             this.jumpCount = 1;
+        }
+        if (idle && idleClock > 120 && !idleAnim) {
+            idleAnim = true;
+            switchCostume(whoAmI+"-idle.png");
+        } else if (!idle && idleAnim) {
+            idleAnim = false;
+            switchCostume(whoAmI+"-still.png");
+            setLocation(getX()+2,getY()-4);
+        }
+        if (facing != facingProc) {
+            GreenfootImage img = getImage();
+            img.mirrorHorizontally();
+            setImage(img);
+            facingProc = facing;
         }
     }
     
@@ -68,6 +78,7 @@ public class Player extends Mover
             rightPressed = true;
             facing = false;
             idle = false;
+            idleClock = 0;
             moveLeft(sprinting);
         }
         if (Greenfoot.isKeyDown("d") && atWall() != 1) {
@@ -80,6 +91,7 @@ public class Player extends Mover
             }
             facing = true;
             idle = false;
+            idleClock = 0;
             leftPressed = true;
             moveRight(sprinting);
         }
@@ -98,6 +110,7 @@ public class Player extends Mover
                 return;
             }
             idle = false;
+            idleClock = 0;
             upPressed = true;
             if (this.jumpCount <= 1) {
                 this.jumpCount++;
@@ -114,7 +127,6 @@ public class Player extends Mover
         onGroundExclusive())
         {
             idle = true;
-            idleClock = 0;
         }
     }    
     
@@ -186,6 +198,18 @@ public class Player extends Mover
         int sizer = 2;
         GreenfootImage img = new GreenfootImage(this.getImage());
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
+        setImage(img);
+    }
+    
+    public void switchCostume(String costume) {
+        setImage(costume);
+        GreenfootImage img = getImage();
+        int sizer = 2;
+        img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
+        System.out.println(facing);
+        if (!facing) {
+            img.mirrorHorizontally();
+        }
         setImage(img);
     }
 }
