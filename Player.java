@@ -25,6 +25,9 @@ public class Player extends Mover
     private int idleClock = 0;
     private boolean idleAnim = false;
     
+    
+    private String activeCostume = "player-still.png";
+    
     public String whoAmI = "player";
     
     public void act() 
@@ -52,18 +55,18 @@ public class Player extends Mover
         if (idle && idleClock > 120 && !idleAnim) {
             idleAnim = true;
             switchCostume(whoAmI+"-idle.png");
+            orient(facing);
             int s = facing ? -1 : 1;
             setLocation(getX()-(2*s),getY()-6);
         } else if (!idle && idleAnim) {
             idleAnim = false;
             switchCostume(whoAmI+"-still.png");
+            orient(facing);
             int s = facing ? -1 : 1;
             setLocation(getX()+(2*s),getY()+6);
         }
         if (facing != facingProc) {
-            GreenfootImage img = getImage();
-            img.mirrorHorizontally();
-            setImage(img);
+            orient(facing);
             facingProc = facing;
         }
     }
@@ -205,15 +208,25 @@ public class Player extends Mover
     }
     
     public void switchCostume(String costume) {
+        activeCostume = costume;
         setImage(costume);
         GreenfootImage img = getImage();
         int sizer = 2;
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
         System.out.println(facing);
-        if (!facing) {
-            img.mirrorHorizontally();
-        }
+        //orient(facing);
         setImage(img);
+    }
+    
+    public void orient(boolean dir) {
+        setImage(activeCostume);
+        GreenfootImage img = getImage();
+        int sizer = 2;
+        img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
+        if (!dir) {
+            img.mirrorHorizontally();
+            setImage(img);
+        }
     }
 }
 
