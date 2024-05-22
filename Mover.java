@@ -10,7 +10,6 @@ import greenfoot.*;
  */
 public class Mover extends Actor {
     private static final int acceleration = 1;
-    public static final int speed = 2;
     private static final int jumpStrength = 8;
     protected int jumpCount = 0;
     protected int headBoltTimer = 0;
@@ -32,7 +31,7 @@ public class Mover extends Actor {
         return false;
     }
 
-    public void moveRight(boolean sprinting) {
+    public void moveRight(int speed, boolean sprinting) {
         int s = sprinting ? speed * 2 : speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() + 1, getY());
@@ -55,7 +54,7 @@ public class Mover extends Actor {
         }
     }
 
-    public void moveLeft(boolean sprinting) {
+    public void moveLeft(int speed, boolean sprinting) {
         int s = sprinting ? speed * 2 : speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() - 1, getY());

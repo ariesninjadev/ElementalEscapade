@@ -20,7 +20,7 @@ public class Player extends Mover
     
     private boolean facing = true;
     private boolean facingProc = true;
-    
+    public static final int speed = 2;
     private boolean idle = true;
     private int idleClock = 0;
     private boolean idleAnim = false;
@@ -85,7 +85,7 @@ public class Player extends Mover
             facing = false;
             idle = false;
             idleClock = 0;
-            moveLeft(sprinting);
+            moveLeft(speed, sprinting);
         }
         if (Greenfoot.isKeyDown("d") && atWall() != 1) {
             if (!leftPressed && sprintClock > 0 && sprintKey == "d") {
@@ -99,7 +99,7 @@ public class Player extends Mover
             idle = false;
             idleClock = 0;
             leftPressed = true;
-            moveRight(sprinting);
+            moveRight(speed, sprinting);
         }
         if (!Greenfoot.isKeyDown("a")) {
             rightPressed = false;

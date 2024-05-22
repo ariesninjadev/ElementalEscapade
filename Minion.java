@@ -15,15 +15,16 @@ public class Minion extends Mover
     private int distance;
     private int distancecount=0;
     private int startx;
-    private boolean right;
-    private boolean left;
-    public Minion(String name, int length,int x)
+    private boolean direction;
+    public static final int speed = 1;
+    
+    
+    public Minion(String name, int length, int x)
     {
         setImage(new GreenfootImage(name));
         distance=length;
         startx=x;
-        right=true;
-        left=false;
+        direction=true;
     }
     public void act()
     {
@@ -32,17 +33,14 @@ public class Minion extends Mover
     }
     public void move()
     {
-        if(right==true)
-        {
-            moveRight();
+        if(direction) {
+            moveRight(speed, false);
+        } else {
+            moveLeft(speed, false);
         }
-        if(left==true)
-        {
-            moveLeft();
-        }
-        if(getX()==startx+distance)
-        {
-            moveswitch();
+        
+        if(getX() == startx+distance) {
+            direction = !direction;
         }
     }
     private void checkFall()
@@ -57,7 +55,7 @@ public class Minion extends Mover
             }
         }
     }
-    public void moveLeft() {
+    public void moveLeftOld() {
         int s = speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() - 1, getY());
@@ -79,7 +77,7 @@ public class Minion extends Mover
             }
         }
     }
-    public void moveRight() {
+    public void moveRightOld() {
         int s = speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() + 1, getY());
@@ -99,19 +97,6 @@ public class Minion extends Mover
                 }
                 return;
             }
-        }
-    }
-    public void moveswitch()
-    {
-        if(right==true&&left==false)
-        {
-            right=false;
-            left=true;
-        }
-        else if(left==true&&right==false)
-        {
-            left=false;
-            right=true;
         }
     }
 }
