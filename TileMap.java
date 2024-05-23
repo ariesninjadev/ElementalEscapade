@@ -24,6 +24,8 @@ public class TileMap
         tiles.put(9,Stone::new);
         tiles.put(10,Sand::new);
         tiles.put(11,Wave::new);
+        tiles.put(12,Ocean::new);
+        tiles.put(13,GrassTLSWL::new);
     }
     /**
      * Constructor for objects of class TileMap

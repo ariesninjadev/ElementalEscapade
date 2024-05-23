@@ -39,7 +39,7 @@ public class Lobby extends MAPS
         me = new Player();
         addObject(me, 0, 1000);
         
-        addObject(new Minion("devil-munchkin.png",100,100),100,100);
+        addObject(new Minion("devil-munchkin.png"),100,100);
         setPaintOrder(Player.class);
         
         if (mp) {

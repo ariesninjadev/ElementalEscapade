@@ -1,6 +1,6 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
-public class Wave extends Tile
+public class Ocean extends Tile
 {
     int clock = 0;
     boolean costume0 = true;
@@ -16,9 +16,9 @@ public class Wave extends Tile
     
     private void toggleCostume() {
         if (costume0) {
-            setImage("wave-1.png");
+            setImage("ocean-1.png");
         } else {
-            setImage("wave-0.png");
+            setImage("ocean-0.png");
         }
         costume0 = !costume0;
     }

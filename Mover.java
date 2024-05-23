@@ -182,11 +182,32 @@ public class Mover extends Actor {
 
         return n == null;
     }
+    
+    public Actor upcomingWalkable(boolean facing) {
+        int sign = facing ? 1 : -1;
+        Object n = getOneObjectAtOffset(sign * (getImage().getWidth() / 2 + 4), (getImage().getHeight() / 2 + 3), null);
+        
+        // System.out.println(n);
+
+        return (Actor) n;
+    }
 
     public boolean touchingCeil() {
         return isColliding(0, -getImage().getHeight() / 2, null);
     }
 
+    public int atWall()
+    {
+        if (getX() < (getImage().getWidth()/2+2))
+        {
+            return -1;
+        } else if (getX() > (getWorld().getWidth()-(getImage().getWidth()/2))-2)
+        {
+            return 1;
+        }
+        return 0;
+    }
+    
     public boolean fall() {
         vSpeed += acceleration;
         int dir = (int) Math.signum(vSpeed);

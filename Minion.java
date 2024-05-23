@@ -12,19 +12,14 @@ public class Minion extends Mover
      * Act - do whatever the Minion wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
      */
-    private int distance;
-    private int distancecount=0;
-    private int startx;
-    private boolean direction;
+    private boolean direction = true;
+    private boolean spriteFacing = false;
     public static final int speed = 1;
     
     
-    public Minion(String name, int length, int x)
+    public Minion(String name)
     {
         setImage(new GreenfootImage(name));
-        distance=length;
-        startx=x;
-        direction=true;
     }
     public void act()
     {
@@ -38,8 +33,13 @@ public class Minion extends Mover
         } else {
             moveLeft(speed, false);
         }
-        
-        if(getX() == startx+distance) {
+        if (spriteFacing != direction) {
+            spriteFacing = direction;
+            GreenfootImage img = getImage();
+            img.mirrorHorizontally();
+            setImage(img);
+        }
+        if (atWall() != 0 || upcomingWalkable(direction) instanceof Wave) {
             direction = !direction;
         }
     }

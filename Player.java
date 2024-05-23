@@ -24,6 +24,7 @@ public class Player extends Mover
     private boolean idle = true;
     private int idleClock = 0;
     private boolean idleAnim = false;
+    private Actor uw;
     
     
     private String activeCostume = "player-still.png";
@@ -32,6 +33,7 @@ public class Player extends Mover
     
     public void act() 
     {
+        uw = upcomingWalkable(facing);
         Greenfoot.setSpeed( 47 );
         idleClock++;
         
@@ -73,33 +75,37 @@ public class Player extends Mover
     
     private void checkKeys()
     {
-        if (Greenfoot.isKeyDown("a") && atWall() != -1) {
-            if (!rightPressed && sprintClock > 0 && sprintKey == "a") {
-                sprinting = true;
-            }
-            sprintKey = "a";
-            if (!rightPressed) {
-                sprintClock = 11;
-            }
-            rightPressed = true;
-            facing = false;
-            idle = false;
-            idleClock = 0;
-            moveLeft(speed, sprinting);
-        }
         if (Greenfoot.isKeyDown("d") && atWall() != 1) {
-            if (!leftPressed && sprintClock > 0 && sprintKey == "d") {
-                sprinting = true;
-            }
-            sprintKey = "d";
-            if (!leftPressed) {
-                sprintClock = 11;
-            }
             facing = true;
-            idle = false;
-            idleClock = 0;
-            leftPressed = true;
-            moveRight(speed, sprinting);
+            if (! (uw instanceof Wave)) {
+                if (!leftPressed && sprintClock > 0 && sprintKey == "d") {
+                    sprinting = true;
+                }
+                sprintKey = "d";
+                if (!leftPressed) {
+                    sprintClock = 11;
+                }
+                idle = false;
+                idleClock = 0;
+                leftPressed = true;
+                moveRight(speed, sprinting);
+            }
+        }
+        if (Greenfoot.isKeyDown("a") && atWall() != -1) {
+            facing = false;
+            if (! (uw instanceof Wave)) {
+                if (!rightPressed && sprintClock > 0 && sprintKey == "a") {
+                    sprinting = true;
+                }
+                sprintKey = "a";
+                if (!rightPressed) {
+                    sprintClock = 11;
+                }
+                rightPressed = true;
+                idle = false;
+                idleClock = 0;
+                moveLeft(speed, sprinting);
+            }
         }
         if (!Greenfoot.isKeyDown("a")) {
             rightPressed = false;
@@ -144,7 +150,7 @@ public class Player extends Mover
             upPressed = false;
         }
         else {
-            if (!fall()) {
+            if (!fall()) { // This will execute the fall method AND check it at the same time.
                 this.jumpCount = 0;
                 upPressed = false;
             }
@@ -158,18 +164,6 @@ public class Player extends Mover
         } else {
             fall();
         }
-    }
-    
-    private int atWall()
-    {
-        if (getX() < (getImage().getWidth()/2+2))
-        {
-            return -1;
-        } else if (getX() > (getWorld().getWidth()-(getImage().getWidth()/2))-2)
-        {
-            return 1;
-        }
-        return 0;
     }
     
     public void startLocalPost()
