@@ -33,8 +33,11 @@ public class Player extends Mover
     
     public void act() 
     {
-        uw = upcomingWalkable(facing);
         Greenfoot.setSpeed( 47 );
+        
+        //System.out.println(distFromFloor());
+        
+        uw = upcomingWalkable(facing,distFromFloor());
         idleClock++;
         
         if (sprintClock > 0) {
@@ -207,7 +210,6 @@ public class Player extends Mover
         GreenfootImage img = getImage();
         int sizer = 2;
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
-        System.out.println(facing);
         //orient(facing);
         setImage(img);
     }
@@ -219,8 +221,8 @@ public class Player extends Mover
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
         if (!dir) {
             img.mirrorHorizontally();
-            setImage(img);
         }
+        setImage(img);
     }
 }
 

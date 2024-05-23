@@ -39,7 +39,7 @@ public class Minion extends Mover
             img.mirrorHorizontally();
             setImage(img);
         }
-        if (atWall() != 0 || upcomingWalkable(direction) instanceof Wave) {
+        if (atWall() != 0 || upcomingWalkable(direction,3) instanceof Wave) {
             direction = !direction;
         }
     }

@@ -183,9 +183,9 @@ public class Mover extends Actor {
         return n == null;
     }
     
-    public Actor upcomingWalkable(boolean facing) {
+    public Actor upcomingWalkable(boolean facing, int floor) {
         int sign = facing ? 1 : -1;
-        Object n = getOneObjectAtOffset(sign * (getImage().getWidth() / 2 + 4), (getImage().getHeight() / 2 + 3), null);
+        Object n = getOneObjectAtOffset(sign * (getImage().getWidth() / 2 + 7), (getImage().getHeight() / 2 + floor + 2), null);
         
         // System.out.println(n);
 
@@ -226,6 +226,16 @@ public class Mover extends Actor {
             }
         }
         return true;
+    }
+    
+    public int distFromFloor() {
+        for (int i=0;i<22;i++) {
+            Object n = getOneObjectAtOffset(0, getImage().getHeight() / 2 + (i*5) + 1, null);
+            if (n instanceof Tile) {
+                return (i*5);
+            }
+        }
+        return (Integer.MAX_VALUE);
     }
 
     private boolean atBottom() {
