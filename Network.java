@@ -4,12 +4,14 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 
-/**
- * Write a description of class Network here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
- */
+class NData
+{
+    public int x;
+    public int y;
+    public boolean facing;
+    public boolean idle;
+}
+
 public class Network  
 {
     
@@ -92,11 +94,11 @@ public class Network
         return (pid);
     }
     
-    public static String postLocation(int x, int y) throws IOException {
-        return (get(host+"api/set/"+id+"/"+pid+"/"+x+"/"+y+"/"+"false"));
+    public static String postLocation(int x, int y, boolean done) throws IOException {
+        return (get(host+"api/set/"+id+"/"+pid+"/"+x+"/"+y+"/"+"false"+"/"+done));
     }
     
-    public static int[] getPartnerLocation() throws IOException {
+    public static NData getPartnerLocation() throws IOException {
         String qid;
         if (pid.equals("1")) {
             qid = "2";
@@ -105,7 +107,12 @@ public class Network
         }
         String data = get(host+"api/get/"+id+"/"+qid);
         String[] xdata = data.split(",");
-        return (new int[]{Integer.parseInt(xdata[0]),Integer.parseInt(xdata[1])});
+        NData nd = new NData();
+        nd.x = Integer.parseInt(xdata[0]);
+        nd.y = Integer.parseInt(xdata[1]);
+        nd.facing = Boolean.parseBoolean(xdata[2]);
+        nd.idle = Boolean.parseBoolean(xdata[3]);
+        return nd;
     }
     
 }

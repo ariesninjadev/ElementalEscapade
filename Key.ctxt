@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Key
+comment1.params=
+comment1.target=Key()
+comment2.params=
+comment2.target=boolean\ isCollidable()
+comment3.params=
+comment3.target=void\ act()
+comment4.params=
+comment4.target=boolean\ pickedUp()
+comment5.params=
+comment5.target=boolean\ pickedUpOld()
+numComments=6

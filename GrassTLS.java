@@ -6,4 +6,8 @@ public class GrassTLS extends Tile
     {
         // Add your action code here.
     }
+    
+    public String walkFile() {
+        return "walk-grass.wav";
+    }
 }

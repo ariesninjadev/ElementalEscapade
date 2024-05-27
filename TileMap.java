@@ -26,6 +26,21 @@ public class TileMap
         tiles.put(11,Wave::new);
         tiles.put(12,Ocean::new);
         tiles.put(13,GrassTLSWL::new);
+        tiles.put(14,Key::new);
+        tiles.put(15,GrassISO::new);
+        tiles.put(16,GrassTLCDuel::new);
+        tiles.put(17,GrassTopRotatedDuel::new);
+        tiles.put(18,GrassTL2S::new);
+        // 19 Burner
+        // 20 Geyser
+        tiles.put(21,IceHanging::new);
+        tiles.put(22,RocksHanging::new);
+        tiles.put(23,GrassTopDuel::new);
+        tiles.put(24,GrassTL2SRotated::new);
+        tiles.put(25,GrassTopTLCDuel::new);
+        tiles.put(26,GrassTopTLC::new);
+        tiles.put(27,GrassTopTLCRotated::new);
+        tiles.put(28,GrassTLSDuel::new);
     }
     /**
      * Constructor for objects of class TileMap

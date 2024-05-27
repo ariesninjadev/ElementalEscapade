@@ -13,6 +13,13 @@ public class Tile extends Actor
         return true;
     }
     
+    public String walkFile() {
+        return null;
+    }
+    
+    public void event() {
+    }
+    
     public void act()
     {
         // Add your action code here.

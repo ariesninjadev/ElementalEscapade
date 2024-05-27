@@ -22,4 +22,8 @@ public class Wave extends Tile
         }
         costume0 = !costume0;
     }
+    
+    public boolean isCollidable() {
+        return false;
+    }
 }

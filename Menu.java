@@ -12,14 +12,17 @@ public class Menu extends World
     MenuBG menu1 = new MenuBG();
     MenuBG menu2 = new MenuBG();
     
+    GreenfootSound menuMusic = new GreenfootSound("menu-bgm-alt.wav");
+    
     public void joinLobby(boolean mp) throws java.io.IOException {
-        Greenfoot.setWorld(new Lobby(mp));
+        menuMusic.stop();
+        Greenfoot.setWorld(new Game(mp));
     }
     
-    /**
-     * Constructor for objects of class Menu.
-     * 
-     */
+    public void started() {
+        menuMusic.playLoop();
+     }
+    
     public Menu() throws java.io.IOException
     {    
         // Create a new world with 600x400 cells with a cell size of 1x1 pixels.
@@ -30,6 +33,7 @@ public class Menu extends World
         
         addObject(menu1, 240, 200);
         addObject(menu2, -480, 200);
+
         
         stat.show("menu-title.png",280,180);
         stat.show("menu-play.png",120,180,true,(() -> 

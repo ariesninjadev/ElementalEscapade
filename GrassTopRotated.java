@@ -6,4 +6,8 @@ public class GrassTopRotated extends Tile
     {
         // Add your action code here.
     }
+    
+    public String walkFile() {
+        return "walk-grass.wav";
+    }
 }

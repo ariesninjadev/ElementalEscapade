@@ -9,17 +9,41 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 public class Partner extends Mover
 {
     
-    int[] pdata;
+    NData ndata;
+    
+    public String whoAmI = "partner";
+    
+    private String activeCostume = "partner-still.png";
+    private GreenfootImage image;
+    private boolean facing = true;
     
     Thread thread;
+
+    public void act() {}
     
-    /**
-     * Act - do whatever the Partner wants to do. This method is called whenever
-     * the 'Act' or 'Run' button gets pressed in the environment.
-     */
-    public void act()
-    {}
+    public void init(String who) {
+        setImage(who + "-still.png");
+        orient(true);
+        whoAmI = who;
+    }
     
+    public void switchCostume(String costume) {
+        activeCostume = costume;
+        orient(facing);
+    }
+    
+    public void orient(boolean dir) {
+        setImage(activeCostume);
+        GreenfootImage img = getImage();
+        int sizer = 2;
+        img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10);
+        if (!dir) {
+            img.mirrorHorizontally();
+        }
+        setImage(img);
+    }
+    
+    // DOCUMENTATION FOR NET NOT PROVIDED
     public void partnerGet()
     {
         thread = new Thread(new Runnable() 
@@ -29,13 +53,19 @@ public class Partner extends Mover
                 while (true) {
                     try
                     {
-                        pdata = Network.getPartnerLocation();
+                        ndata = Network.getPartnerLocation();
                     }
                     catch (java.io.IOException ioe)
                     {
                         ioe.printStackTrace();
                     }
-                    setLocation(pdata[0],pdata[1]);
+                    setLocation(ndata.x,ndata.y);
+                    facing = ndata.facing;
+                    if (ndata.idle) {
+                        switchCostume(whoAmI + "-idle.png");
+                    } else {
+                        switchCostume(whoAmI + "-still.png");
+                    }
                 }
             }
         });

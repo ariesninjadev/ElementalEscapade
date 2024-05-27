@@ -9,12 +9,19 @@ import greenfoot.*;
  * down.
  */
 public class Mover extends Actor {
+    
     private static final int acceleration = 1;
     private static final int jumpStrength = 8;
     protected int jumpCount = 0;
     protected int headBoltTimer = 0;
+    
+    public boolean facing = true;
 
     protected int vSpeed = 0;
+    
+    public boolean hasDrowned = false;
+    
+    public void orient(boolean bool) {}
 
     protected void jump() {
         setVSpeed(-jumpStrength);
@@ -31,7 +38,7 @@ public class Mover extends Actor {
         return false;
     }
 
-    public void moveRight(int speed, boolean sprinting) {
+    public boolean moveRight(int speed, boolean sprinting) {
         int s = sprinting ? speed * 2 : speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() + 1, getY());
@@ -45,16 +52,21 @@ public class Mover extends Actor {
             }
             if (colliding) {
                 setLocation(getX() - 1, getY());
-                if (jumpCount == 0) {
+                if (! (this instanceof Player)) {
+                    return true;
+                }
+                if (jumpCount == 0 && spaceAdjacent()) {
+                    Greenfoot.playSound("jump.mp3");
                     jump();
                     jumpCount++;
                 }
-                return;
+                return false;
             }
         }
+        return false;
     }
 
-    public void moveLeft(int speed, boolean sprinting) {
+    public boolean moveLeft(int speed, boolean sprinting) {
         int s = sprinting ? speed * 2 : speed;
         for (int step = 0; step <= s; step += 1) {
             setLocation(getX() - 1, getY());
@@ -68,36 +80,50 @@ public class Mover extends Actor {
             }
             if (colliding) {
                 setLocation(getX() + 1, getY());
-                if (jumpCount == 0) {
+                if (! (this instanceof Player)) {
+                    return true;
+                }
+                if (jumpCount == 0 && spaceAdjacent()) {
+                    Greenfoot.playSound("jump.mp3");
                     jump();
                     jumpCount++;
                 }
-                return;
+                return false;
             }
         }
+        return false;
     }
 
     public boolean onGround() {
         return isColliding(0, getImage().getHeight() / 2, null);
     }
+    
+    public boolean submerged() {
+        List<Actor> under = getObjectsAtOffset(0, getImage().getHeight() / 2 + 2, null);
+        List<Actor> over = getObjectsAtOffset(0, -getImage().getHeight() / 2, null);
+        for (Actor a : under) {
+            if (a instanceof Wave || a instanceof Ocean) {
+                return true;
+            }
+        }
+        for (Actor a : over) {
+            if (a instanceof Wave || a instanceof Ocean) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public boolean onGroundExclusive() {
         List<Actor> under1 = getObjectsAtOffset(-getImage().getWidth() / 2, getImage().getHeight() / 2 + 1, null);
-        List<Actor> under2 = getObjectsAtOffset(0, getImage().getHeight() / 2 + 1, null);
+        //List<Actor> under2 = getObjectsAtOffset(0, getImage().getHeight() / 2 + 1, null);
         List<Actor> under3 = getObjectsAtOffset(getImage().getWidth() / 2, getImage().getHeight() / 2 + 1, null);
         boolean colliding = false;
         for (Actor a : under1) {
             if (a instanceof Tile && ((Tile) a).isCollidable()) {
                 colliding = true;
                 break;
-            }
-        }
-        if (!colliding) {
-            for (Actor a : under2) {
-                if (a instanceof Tile && ((Tile) a).isCollidable()) {
-                    colliding = true;
-                    break;
-                }
             }
         }
         if (!colliding) {
@@ -110,13 +136,23 @@ public class Mover extends Actor {
         }
         return colliding;
     }
+    
+    public Tile standingOn() {
+        List<Actor> under = getObjectsAtOffset(0, getImage().getHeight() / 2 + 1, null);
+        for (Actor a : under) {
+            if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                return (Tile)a;
+            }
+        }
+        return null;
+    }
 
     public boolean atSide() {
         List<Actor> left1 = getObjectsAtOffset(-getImage().getWidth() / 2, getImage().getHeight() / 2 - 1, null);
-        List<Actor> left2 = getObjectsAtOffset(-getImage().getWidth() / 2, 0, null);
+        //List<Actor> left2 = getObjectsAtOffset(-getImage().getWidth() / 2, 0, null);
         List<Actor> left3 = getObjectsAtOffset(-getImage().getWidth() / 2, -getImage().getHeight() / 2 + 1, null);
         List<Actor> right1 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, getImage().getHeight() / 2 - 1, null);
-        List<Actor> right2 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, 0, null);
+        //List<Actor> right2 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, 0, null);
         List<Actor> right3 = getObjectsAtOffset(getImage().getWidth() / 2 - 1, -getImage().getHeight() / 2 + 1, null);
     
         boolean colliding = false;
@@ -124,14 +160,6 @@ public class Mover extends Actor {
             if (a instanceof Tile && ((Tile) a).isCollidable()) {
                 colliding = true;
                 break;
-            }
-        }
-        if (!colliding) {
-            for (Actor a : left2) {
-                if (a instanceof Tile && ((Tile) a).isCollidable()) {
-                    colliding = true;
-                    break;
-                }
             }
         }
         if (!colliding) {
@@ -151,14 +179,6 @@ public class Mover extends Actor {
             }
         }
         if (!colliding) {
-            for (Actor a : right2) {
-                if (a instanceof Tile && ((Tile) a).isCollidable()) {
-                    colliding = true;
-                    break;
-                }
-            }
-        }
-        if (!colliding) {
             for (Actor a : right3) {
                 if (a instanceof Tile && ((Tile) a).isCollidable()) {
                     colliding = true;
@@ -169,25 +189,22 @@ public class Mover extends Actor {
         return colliding;
     }
 
-    public boolean spaceUpLeft() {
-        Object n = getOneObjectAtOffset(-getImage().getWidth() / 2 - 1, (-getImage().getWidth() / 2 - 1), null);
+    public boolean spaceAdjacent() {
+        int z = facing ? 1 : -1;
+        List<Actor> pose = getObjectsAtOffset((getImage().getWidth() / 2 + 2)*z, -getImage().getHeight() / 2 - 1, null);
 
-        if (n instanceof Partner) {
-            return true;
+        for (Actor a : pose) {
+            if (a instanceof Tile && ((Tile) a).isCollidable()) {
+                return false;
+            }
         }
 
-        if (n instanceof Tile && !((Tile) n).isCollidable()) {
-            return true;
-        }
-
-        return n == null;
+        return true;
     }
     
     public Actor upcomingWalkable(boolean facing, int floor) {
         int sign = facing ? 1 : -1;
         Object n = getOneObjectAtOffset(sign * (getImage().getWidth() / 2 + 7), (getImage().getHeight() / 2 + floor + 2), null);
-        
-        // System.out.println(n);
 
         return (Actor) n;
     }
@@ -209,6 +226,14 @@ public class Mover extends Actor {
     }
     
     public boolean fall() {
+        if (submerged() && !onGroundExclusive()) {
+            if (!hasDrowned) {
+                Greenfoot.playSound("water.wav");
+            }
+            hasDrowned = true;
+            setLocation(getX(), getY()+1);
+            return true;
+        }
         vSpeed += acceleration;
         int dir = (int) Math.signum(vSpeed);
         for (int step = 0; step != vSpeed; step += dir) {
@@ -217,6 +242,9 @@ public class Mover extends Actor {
             for (Actor a : actors) {
                 if (a instanceof Tile && ((Tile) a).isCollidable()) {
                     setLocation(getX(), getY() - dir);
+                    if (Math.abs(vSpeed) >= 13) {
+                        Greenfoot.playSound("land.wav");
+                    }
                     vSpeed = 0;
                     if (!onGroundExclusive()) {
                         headBoltTimer = 20;
@@ -238,8 +266,8 @@ public class Mover extends Actor {
         return (Integer.MAX_VALUE);
     }
 
-    private boolean atBottom() {
-        return getY() >= getWorld().getHeight() - 2;
+    public boolean atBottom() {
+        return getY() >= getWorld().getHeight() + (getImage().getHeight() / 2);
     }
 
     private void gameEnd() {
