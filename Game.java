@@ -210,6 +210,7 @@ public class Game extends World
             noAnimate = false;
             me.movementLocked = false;
             me.cancelIdle();
+            me.life = true;
             resetFade();
             canLoopDown = false;
             //gameMusic.setVolume(50);
@@ -335,7 +336,7 @@ public class Game extends World
                 group3.add((Tile)rock);
             }
         }
-        Zone zone1 = new Zone(360, 280, 80, 40, group1);
+        Zone zone1 = new Zone(380, 280, 80, 40, group1);
         Zone zone2 = new Zone(380, 100, 140, 25, group2);
         Zone zone3 = new Zone(220, 100, 80, 30, group3);
         zones.add(zone1);

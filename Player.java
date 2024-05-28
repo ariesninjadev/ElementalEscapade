@@ -1,4 +1,5 @@
 import greenfoot.*;
+import java.util.List;
 
 /**
  * A little penguin that wants to get to the other side.
@@ -30,6 +31,7 @@ public class Player extends Mover
     private String activeCostume = "player-still.png"; // Current costume link
     private GreenfootImage image; // Current costume
     private boolean facingProc = true; // Which direction is our costume facing?
+    private boolean deathAnimation = false;
 
     // Network
     Thread thread; // Isolated environment for multiplayer features
@@ -41,8 +43,13 @@ public class Player extends Mover
     private int epicenter = 0; // Some costumes require us to recenter the player
     public boolean movementLocked = false;
     private int walkAudioFileClock = 0; // Clock to regulate the frequency of a walk sound playing
-
-    public int health=100;
+    
+    // Health
+    public boolean life = true; // True = 2 lives left, False = 1 life left
+    public boolean invulnerable = true; // Are we invulnerable?
+    public int invulnerabilityClock = 0; // How many more ticks are we invulnerable for
+    public boolean lockedMover = false; // If true, all collision checks are disabled (animations)
+    
     public Player() {
         orient(true); // Update costume size and direction on start
     }
@@ -57,6 +64,8 @@ public class Player extends Mover
     public void act() 
     {
 
+        System.out.println(invulnerabilityClock);
+        
         uw = upcomingWalkable(facing,distFromFloor()); // Update lookahead
 
         //Update clocks
@@ -67,9 +76,25 @@ public class Player extends Mover
         }
         if (headBoltTimer > 0) {
             headBoltTimer--;
-        } 
+        }
+        if (invulnerabilityClock > 0) {
+            invulnerabilityClock--;
+        } else {
+            invulnerable = false;
+        }
+        
+        if (deathAnimation) {
+            fall();
+        }
+        
+        // Stop checks if we are locked
+        if (lockedMover) {
+            return;
+        }
 
         checkKeys(); // Check all keypresses
+        
+        checkEnemyCollision();
 
         // Watch for a floor if we are falling or a roof if we are rising
         if (vSpeed >= 0) {
@@ -336,14 +361,35 @@ public class Player extends Mover
         } catch (java.lang.NullPointerException npe) {}
     }
 
-    public void hit(int damage)
+    public void takeDamage()
     {
-        health-=damage;
-        if (health<=0)
-        {
+        if (invulnerable) {
+            return;
+        }
+        if (life) {
+            life = false;
+            invulnerable = true;
+            invulnerabilityClock = 150;
+        } else {
             Game game=(Game) getWorld();
             game.restartLevel();
-            health=100;
+            invulnerable = true;
+            invulnerabilityClock = 150;
+        }
+    }
+    
+    public void checkEnemyCollision()
+    {
+        List<SmallEnemy> e1 = getIntersectingObjects(SmallEnemy.class);
+        List<RocksHanging> e2 = getIntersectingObjects(RocksHanging.class);
+        if (e1.size() > 0) {
+            takeDamage();
+            return;
+        }
+        for (RocksHanging rock : e2) {
+            if (!rock.onGround) {
+                takeDamage();
+            }
         }
     }
 }

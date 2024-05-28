@@ -12,11 +12,24 @@ public class RocksHanging extends Tile
     
     int acceleration = 1;
     
-    boolean onGround = false;
+    public boolean onGround = false;
+    
+    int aliveClock = 75;
+    
+    int transparency = 255;
     
     public void act()
     {
-        if (!executeEvent || onGround) {
+        if (aliveClock == 0 && !(transparency == 0)) {
+            transparency-=3;
+            getImage().setTransparency(transparency);
+            return;
+        }
+        if (onGround) {
+            aliveClock--;
+            return;
+        }
+        if (!executeEvent) {
             return;
         }
         if (delay > 0) {
@@ -52,5 +65,9 @@ public class RocksHanging extends Tile
             }
         }
         return true;
+    }
+    
+    public boolean isCollidable() {
+        return false;
     }
 }
