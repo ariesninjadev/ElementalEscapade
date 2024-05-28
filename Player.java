@@ -42,6 +42,7 @@ public class Player extends Mover
     public boolean movementLocked = false;
     private int walkAudioFileClock = 0; // Clock to regulate the frequency of a walk sound playing
 
+    public int health=100;
     public Player() {
         orient(true); // Update costume size and direction on start
     }
@@ -335,5 +336,15 @@ public class Player extends Mover
         } catch (java.lang.NullPointerException npe) {}
     }
 
+    public void hit(int damage)
+    {
+        health-=damage;
+        if (health<=0)
+        {
+            Game game=(Game) getWorld();
+            game.restartLevel();
+            health=100;
+        }
+    }
 }
  

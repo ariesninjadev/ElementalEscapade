@@ -18,6 +18,8 @@ public class Partner extends Mover
     private boolean facing = true;
     
     Thread thread;
+    
+    public int health=100;
 
     public void act() {}
     
@@ -77,5 +79,16 @@ public class Partner extends Mover
         try {
             thread.stop();
         } catch (java.lang.NullPointerException npe) {}
+    }
+    
+    public void hit(int damage)
+    {
+        health-=damage;
+        if (health<=0)
+        {
+            Game game=(Game) getWorld();
+            game.restartLevel();
+            health=100;
+        }
     }
 }

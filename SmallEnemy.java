@@ -16,7 +16,7 @@ public class SmallEnemy extends Mover
     private boolean spriteFacing = false;
     public static final int speed = 1;
     
-    
+    private int damageDealt=15;
     public SmallEnemy(String name)
     {
         setImage(new GreenfootImage(name));
@@ -25,6 +25,7 @@ public class SmallEnemy extends Mover
     {
         move();
         checkFall();
+        checkHit();
     }
     public void move()
     {
@@ -105,4 +106,19 @@ public class SmallEnemy extends Mover
             }
         }
     }
+    
+    public void checkHit()
+    {
+        List<Partner> partners = getIntersectingObjects(Partner.class);
+        List<Player> players = getIntersectingObjects(Player.class);
+        for (Player player:players)
+        {
+            player.hit(damageDealt);
+        }
+        for (Partner partner:partners)
+        {
+            partner.hit(damageDealt);
+        }
+    }
+    
 }

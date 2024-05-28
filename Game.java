@@ -131,7 +131,7 @@ public class Game extends World
     
     public void act() {
         
-        System.out.println(cVol);
+        //System.out.println(cVol);
         
         MouseInfo mouse = Greenfoot.getMouseInfo();
         
@@ -337,7 +337,7 @@ public class Game extends World
         }
         Zone zone1 = new Zone(360, 280, 80, 40, group1);
         Zone zone2 = new Zone(380, 100, 140, 25, group2);
-        Zone zone3 = new Zone(250, 100, 80, 30, group3);
+        Zone zone3 = new Zone(220, 100, 80, 30, group3);
         zones.add(zone1);
         zones.add(zone2);
         zones.add(zone3);
