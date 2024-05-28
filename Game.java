@@ -81,7 +81,7 @@ public class Game extends World
     public boolean noAnimate = false;
     
     // Audio
-    public GreenfootSound gameMusic = new GreenfootSound("earth-bgm.wav");
+    public Audio gameMusic = new Audio("earth-bgm.wav");
     private int cVol = 36;
     private boolean canLoopDown = false;
     
@@ -121,7 +121,7 @@ public class Game extends World
                     @Override
                     public void run() {
                         Orb.locked = false;
-                        Greenfoot.playSound("portal-unlocked.wav");
+                        Audio.playSound("portal-unlocked.wav");
                     }
                 }, 
                 900
@@ -190,7 +190,7 @@ public class Game extends World
             cVol = 0;
             gameMusic.setVolume(0);
             canLoopDown = true;
-            Greenfoot.playSound("level-up.wav");
+            Audio.playSound("level-up.wav");
             stage++;
             noAnimate = true;
             fadeStage = 1;
@@ -367,7 +367,7 @@ public class Game extends World
             new java.util.TimerTask() {
                 @Override
                 public void run() {
-                    Greenfoot.playSound("lose.wav"); 
+                    Audio.playSound("lose.wav"); 
                     new java.util.Timer().schedule( 
                         new java.util.TimerTask() {
                             @Override
@@ -386,6 +386,7 @@ public class Game extends World
     }
     
     public void recastPlayer(int x, int y) {
+        me.lockedMover = false;
         if (gameIsMultiplayer) {
             int z = (playerNum==1) ? -1 : 1;
             me.setLocation(x+(16*z), y);

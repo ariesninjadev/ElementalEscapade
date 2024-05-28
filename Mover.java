@@ -56,7 +56,7 @@ public class Mover extends Actor {
                     return true;
                 }
                 if (jumpCount == 0 && spaceAdjacent()) {
-                    Greenfoot.playSound("jump.mp3");
+                    Audio.playSound("jump.mp3");
                     jump();
                     jumpCount++;
                 }
@@ -84,7 +84,7 @@ public class Mover extends Actor {
                     return true;
                 }
                 if (jumpCount == 0 && spaceAdjacent()) {
-                    Greenfoot.playSound("jump.mp3");
+                    Audio.playSound("jump.mp3");
                     jump();
                     jumpCount++;
                 }
@@ -228,7 +228,7 @@ public class Mover extends Actor {
     public boolean fall() {
         if (submerged() && !onGroundExclusive()) {
             if (!hasDrowned) {
-                Greenfoot.playSound("water.wav");
+                Audio.playSound("water.wav");
             }
             hasDrowned = true;
             setLocation(getX(), getY()+1);
@@ -243,7 +243,7 @@ public class Mover extends Actor {
                 if (a instanceof Tile && ((Tile) a).isCollidable()) {
                     setLocation(getX(), getY() - dir);
                     if (Math.abs(vSpeed) >= 13) {
-                        Greenfoot.playSound("land.wav");
+                        Audio.playSound("land.wav");
                     }
                     vSpeed = 0;
                     if (!onGroundExclusive()) {
@@ -252,6 +252,15 @@ public class Mover extends Actor {
                     return false;
                 }
             }
+        }
+        return true;
+    }
+    
+    public boolean fallNoColl() {
+        vSpeed += acceleration;
+        int dir = (int) Math.signum(vSpeed);
+        for (int step = 0; step != vSpeed; step += dir) {
+            setLocation(getX(), getY() + dir);
         }
         return true;
     }

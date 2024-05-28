@@ -65,6 +65,7 @@ public class Player extends Mover
     {
 
         System.out.println(invulnerabilityClock);
+        System.out.println(life);
         
         uw = upcomingWalkable(facing,distFromFloor()); // Update lookahead
 
@@ -84,7 +85,7 @@ public class Player extends Mover
         }
         
         if (deathAnimation) {
-            fall();
+            fallNoColl();
         }
         
         // Stop checks if we are locked
@@ -112,7 +113,7 @@ public class Player extends Mover
         if (idle && idleClock > 120 && !idleAnim) {
             idleAnim = true;
             switchCostume(whoAmI+"-idle.png");
-            Greenfoot.playSound("pickup-torch.wav");
+            Audio.playSound("pickup-torch.wav");
             orient(facing);
             int s = facing ? -1 : 1; // Convert direction boolean to -1 or 1
             epicenter = -3;
@@ -120,7 +121,7 @@ public class Player extends Mover
         } else if (!idle && idleAnim) {
             idleAnim = false;
             switchCostume(whoAmI+"-still.png");
-            Greenfoot.playSound("put-away-torch.wav");
+            Audio.playSound("put-away-torch.wav");
             orient(facing);
             int s = facing ? -1 : 1;
             epicenter = 0;
@@ -133,7 +134,7 @@ public class Player extends Mover
             facingProc = facing;
         }
 
-        if (!dead && atBottom()) {
+        if (!dead && atBottom() && !lockedMover) {
             dead = true;
             ((Game)getWorld()).restartLevel(); 
         }
@@ -160,7 +161,7 @@ public class Player extends Mover
                     // If we pressed d less than 11 frames ago, sprint
                     if (sprintClock > 0 && sprintKey == "d" && !sprinting) {
                         sprinting = true;
-                        Greenfoot.playSound("sprint.wav");
+                        Audio.playSound("sprint.wav");
                     }
                     sprintKey = "d"; // If we start sprinting, it's gonna be to the right!
                     sprintClock = 11; // Reset the sprint clock
@@ -184,7 +185,7 @@ public class Player extends Mover
                 if (!leftPressed) {
                     if (sprintClock > 0 && sprintKey == "a" && !sprinting) {
                         sprinting = true;
-                        Greenfoot.playSound("sprint.wav");
+                        Audio.playSound("sprint.wav");
                     }
                     sprintKey = "a";
                     sprintClock = 11;
@@ -225,9 +226,9 @@ public class Player extends Mover
             // If we have jumped zero or one times, jump
             if (this.jumpCount <= 1) {
                 if (this.jumpCount == 0) {
-                    Greenfoot.playSound("jump.mp3");
+                    Audio.playSound("jump.mp3");
                 } else {
-                    Greenfoot.playSound("jump.mp3");                
+                    Audio.playSound("jump.mp3");                
                 }
                 this.jumpCount++;
                 jump();
@@ -317,7 +318,7 @@ public class Player extends Mover
         walkAudioFileClock = 0;
         Tile on = standingOn();
         if (on != null && on.walkFile() != null) {
-            Greenfoot.playSound(on.walkFile()); 
+            Audio.playSound(on.walkFile()); 
         }
     }
 
@@ -373,8 +374,11 @@ public class Player extends Mover
         } else {
             Game game=(Game) getWorld();
             game.restartLevel();
+            lockedMover = true;
+            movementLocked = true;
             invulnerable = true;
             invulnerabilityClock = 150;
+            deathAnimation = true;
         }
     }
     
