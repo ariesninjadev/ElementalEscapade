@@ -17,7 +17,7 @@ public class Mover extends Actor {
     
     public boolean facing = true;
 
-    protected int vSpeed = 0;
+    public int vSpeed = 0;
     
     public boolean hasDrowned = false;
     

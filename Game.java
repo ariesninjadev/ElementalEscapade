@@ -133,10 +133,10 @@ public class Game extends World
         
         //System.out.println(cVol);
         
-        MouseInfo mouse = Greenfoot.getMouseInfo();
+        //MouseInfo mouse = Greenfoot.getMouseInfo();
         
-        if (mouse != null) {
-            showText(mouse.getX() + ", " + mouse.getY(), 50, 20);
+        if (me != null) {
+            showText(me.getX() + ", " + me.getY(), 50, 20);
         }
         
         switch(stage) {
@@ -316,6 +316,7 @@ public class Game extends World
         addObject(new SmallEnemy("sand-snake.png"),230,30);
         keyReq = 3;
         me.waterProtected = false;
+        me.vSpeed = 0;
         recastPlayer(30,320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
@@ -386,6 +387,7 @@ public class Game extends World
     }
     
     public void recastPlayer(int x, int y) {
+        me.waterDeath = false;
         me.lockedMover = false;
         if (gameIsMultiplayer) {
             int z = (playerNum==1) ? -1 : 1;

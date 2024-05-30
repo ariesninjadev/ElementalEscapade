@@ -49,6 +49,7 @@ public class Player extends Mover
     public boolean invulnerable = true; // Are we invulnerable?
     public int invulnerabilityClock = 0; // How many more ticks are we invulnerable for
     public boolean lockedMover = false; // If true, all collision checks are disabled (animations)
+    public boolean waterDeath = false;
     
     public Player() {
         orient(true); // Update costume size and direction on start
@@ -134,9 +135,13 @@ public class Player extends Mover
             facingProc = facing;
         }
 
-        if (!dead && atBottom() && !lockedMover) {
+        if (!dead && atBottom() && !lockedMover && waterDeath) {
             dead = true;
             ((Game)getWorld()).restartLevel(); 
+        }
+    
+        if (getY() > 450) {
+            lockedMover = false;
         }
     }
 
@@ -255,7 +260,11 @@ public class Player extends Mover
     private void checkFall()
     {
         // If on ground, cancel all velocity and update states
-        if (onGround() && !submerged()) {
+        boolean submerged = submerged();
+        if (submerged) {
+            waterDeath = true;
+        }
+        if (onGround() && !submerged) {
             setVSpeed(0);
             this.jumpCount = 0;
             upPressed = false;
@@ -299,8 +308,11 @@ public class Player extends Mover
         if (!dir) {
             img.mirrorHorizontally();
         }
-
+        
         setImage(img);
+        if (!life) {
+            grayify();
+        }
     }
 
     // Allows the world to cancel your idleness
@@ -369,6 +381,7 @@ public class Player extends Mover
         }
         if (life) {
             life = false;
+            orient(facing);
             invulnerable = true;
             invulnerabilityClock = 150;
         } else {
@@ -395,6 +408,36 @@ public class Player extends Mover
                 takeDamage();
             }
         }
+    }
+    
+    public void grayify() {
+        GreenfootImage img = getImage();
+        for(int i=0; i<img.getWidth(); i++)
+        {
+            for(int j=0; j<img.getHeight(); j++)
+            {
+                Color col=img.getColorAt(i,j);
+                if (col.getAlpha() == 0) {
+                    img.setColorAt(i,j,new Color(0,0,0,0));
+                } else {
+                    int r=col.getRed();
+                    int g=col.getGreen();
+                    int b=col.getBlue();
+                    int avg=(r+g+b)/3;
+                    img.setColorAt(i,j,new Color(normalize(avg*2,0,255), avg, avg));
+                }
+            }
+            setImage(img);
+        }
+    }
+    
+    private int normalize(int num, int min, int max) {
+        if (num<min) {
+            num = min;
+        } else if (num>max) {
+            num = max;
+        }
+        return num;
     }
 }
  
