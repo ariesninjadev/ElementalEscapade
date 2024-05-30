@@ -192,16 +192,20 @@ public class Game extends World
             canLoopDown = true;
             Audio.playSound("level-up.wav");
             stage++;
-            noAnimate = true;
             fadeStage = 1;
         }
 
         if (fadeStage == 1 && step < 96) {
             Greenfoot.setSpeed( 56 );
             fadeOut();
+            noAnimate = true;
         } else if (fadeStage == 1 && step == 96) {
             step--;
             unload();
+            if (reviving) {
+                me.dead = false;
+                me.orient();
+            }
             bootLevel(stage);
             fadeStage = 2;
         } else if (fadeStage == 2 && step == -1) {
@@ -219,7 +223,6 @@ public class Game extends World
                 //System.out.println("asd");
                 reviving = false;
                 //gameMusic.playLoop();
-                me.dead = false;
                 me.hasDrowned = false;
             }
         } else if (fadeStage == 2 && step < 96) {

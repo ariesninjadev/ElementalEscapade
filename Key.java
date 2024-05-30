@@ -69,7 +69,7 @@ public class Key extends Tile
     public boolean pickedUp() {
         List<Actor> actors = getIntersectingObjects(null);
         for (Actor a : actors) {
-            if (a instanceof Player || a instanceof Partner) {
+            if (a instanceof Player && !((Player)a).dead) {
                 return true;
             }
         }

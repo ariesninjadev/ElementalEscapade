@@ -31,7 +31,7 @@ public class Player extends Mover
     private String activeCostume = "player-still.png"; // Current costume link
     private GreenfootImage image; // Current costume
     private boolean facingProc = true; // Which direction is our costume facing?
-    private boolean deathAnimation = false;
+    private int flashClock = 0;
 
     // Network
     Thread thread; // Isolated environment for multiplayer features
@@ -52,12 +52,12 @@ public class Player extends Mover
     public boolean waterDeath = false;
     
     public Player() {
-        orient(true); // Update costume size and direction on start
+        orient(); // Update costume size and direction on start
     }
 
     public void init(String who) {
         setImage(who + "-still.png");
-        orient(true);
+        orient();
         whoAmI = who;
     }
 
@@ -65,8 +65,7 @@ public class Player extends Mover
     public void act() 
     {
 
-        System.out.println(invulnerabilityClock);
-        System.out.println(life);
+        System.out.println(dead);
         
         uw = upcomingWalkable(facing,distFromFloor()); // Update lookahead
 
@@ -85,7 +84,7 @@ public class Player extends Mover
             invulnerable = false;
         }
         
-        if (deathAnimation) {
+        if (dead) {
             fallNoColl();
         }
         
@@ -123,7 +122,7 @@ public class Player extends Mover
             idleAnim = false;
             switchCostume(whoAmI+"-still.png");
             Audio.playSound("put-away-torch.wav");
-            orient(facing);
+            orient();
             int s = facing ? -1 : 1;
             epicenter = 0;
             setLocation(getX()+(2*s),getY()+4);
@@ -131,7 +130,7 @@ public class Player extends Mover
 
         // If our direction and costume orientation disagree, update the costume
         if (facing != facingProc) {
-            orient(facing);
+            orient();
             facingProc = facing;
         }
 
@@ -139,10 +138,7 @@ public class Player extends Mover
             dead = true;
             ((Game)getWorld()).restartLevel(); 
         }
-    
-        if (getY() > 450) {
-            lockedMover = false;
-        }
+
     }
 
     // Scan for keypresses
@@ -294,18 +290,18 @@ public class Player extends Mover
     // Switch the players' costume
     public void switchCostume(String costume) {
         activeCostume = costume; // Update state
-        orient(facing); // Call orient
+        orient(); // Call orient
     }
 
     // Mirror and scale the costume on demand
-    public void orient(boolean dir) {
+    public void orient() {
         setImage(activeCostume);
         GreenfootImage img = getImage();
         int sizer = -2;
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10); // Upscales the costume by 2%
 
         // If we are facing left, mirror the image
-        if (!dir) {
+        if (!facing) {
             img.mirrorHorizontally();
         }
         
@@ -381,17 +377,17 @@ public class Player extends Mover
         }
         if (life) {
             life = false;
-            orient(facing);
+            orient();
             invulnerable = true;
             invulnerabilityClock = 150;
-        } else {
+        } else if (! dead) {
             Game game=(Game) getWorld();
             game.restartLevel();
             lockedMover = true;
             movementLocked = true;
             invulnerable = true;
             invulnerabilityClock = 150;
-            deathAnimation = true;
+            dead = true;
         }
     }
     
