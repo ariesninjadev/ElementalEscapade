@@ -39,8 +39,10 @@ public class Boss extends Mover
                     case "Wicked-worm-idle-1":
                         break;
                     case "Super-squid-idle-1":
+                        setImage(new GreenfootImage("Super-squid-idle-2"));
                         break;
                     case "Oscillating-fan-idle-1":
+                        setImage(new GreenfootImage("Oscillating-"));
                         break;
                 }
             }

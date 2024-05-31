@@ -133,10 +133,10 @@ public class Game extends World
         
         //System.out.println(cVol);
         
-        //MouseInfo mouse = Greenfoot.getMouseInfo();
+        MouseInfo mouse = Greenfoot.getMouseInfo();
         
-        if (me != null) {
-            showText(me.getX() + ", " + me.getY(), 50, 20);
+        if (mouse != null) {
+            showText(mouse.getX() + ", " + mouse.getY(), 50, 20);
         }
         
         switch(stage) {
@@ -348,16 +348,65 @@ public class Game extends World
         zones.add(zone3);
     }
     
+    public void earth3() {
+        loadWorld(Data.earth3);
+        keyReq = 3;
+        me.waterProtected = false;
+        me.vSpeed = 0;
+        recastPlayer(30,320);
+        List<Orb> orbs = getObjects(Orb.class);
+        for (Orb orb : orbs) {
+            this.orb = orb;
+        }
+        
+        ArrayList<Tile> group1 = new ArrayList<>();
+        ArrayList<Tile> group2 = new ArrayList<>();
+        ArrayList<Tile> group3 = new ArrayList<>();
+        List<RocksHanging> allRocks = getObjects(RocksHanging.class);
+        for (RocksHanging rock : allRocks) {
+            if (rock.getX() > 360) {
+                group1.add((Tile)rock);
+            } else if (rock.getX() > 280) {
+                group2.add((Tile)rock);
+            } else {
+                group3.add((Tile)rock);
+            }
+        }
+        Zone zone1 = new Zone(400, 40, 240, 20, group1);
+        Zone zone2 = new Zone(305, 300, 60, 20, group2);
+        Zone zone3 = new Zone(180, 200, 60, 20, group3);
+        zones.add(zone1);
+        zones.add(zone2);
+        zones.add(zone3);
+    }
+    
+    public void end1() {
+        loadWorld(Data.lobby);
+        keyReq = 3;
+        me.waterProtected = true;
+        recastPlayer(30,320);
+        List<Orb> orbs = getObjects(Orb.class);
+        for (Orb orb : orbs) {
+            this.orb = orb;
+        }
+    }
+    
     // -------------------------------------------------- //
     
     public void bootLevel(int lvl) {
         Key.v = -1;
         switch (lvl) {
             case 1:
-                earth2();
+                earth1();
                 break;
             case 2:
                 earth2();
+                break;
+            case 3:
+                earth3();
+                break;
+            case 4:
+                end1();
                 break;
         }
     }

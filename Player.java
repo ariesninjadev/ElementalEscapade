@@ -32,6 +32,9 @@ public class Player extends Mover
     private GreenfootImage image; // Current costume
     private boolean facingProc = true; // Which direction is our costume facing?
     private int flashClock = 0;
+    private boolean flashed = false;
+    private int walkClock = 0;
+    private int walkState = 1;
 
     // Network
     Thread thread; // Isolated environment for multiplayer features
@@ -65,13 +68,15 @@ public class Player extends Mover
     public void act() 
     {
 
-        System.out.println(dead);
+        //System.out.println(dead);
         
         uw = upcomingWalkable(facing,distFromFloor()); // Update lookahead
 
         //Update clocks
         idleClock++;
         walkAudioFileClock++;
+        flashClock++;
+        walkClock++;
         if (sprintClock > 0) {
             sprintClock--;
         }
@@ -82,6 +87,25 @@ public class Player extends Mover
             invulnerabilityClock--;
         } else {
             invulnerable = false;
+        }
+        if (flashClock == 10 || dead) {
+            flashClock = 0;
+            if (invulnerable) {
+                flashed = !flashed;
+                orient();
+            } else {
+                flashed = false;
+                orient();
+            }
+        }
+        if (walkClock >= 5 || (sprinting && walkClock >= 3)) {
+            if ((leftPressed || rightPressed)) {
+                walkClock = 0;
+                walkState = (walkState % 4) + 1;
+                orient();
+            } else {
+                walkState = 0;
+            }
         }
         
         if (dead) {
@@ -295,7 +319,12 @@ public class Player extends Mover
 
     // Mirror and scale the costume on demand
     public void orient() {
-        setImage(activeCostume);
+        if (walkState > 0 && activeCostume.equals(whoAmI+"-still.png")) {
+            String walkType = sprinting ? "run" : "walk";
+            setImage(whoAmI+"-"+walkType+"-"+walkState+".png");
+        } else {
+            setImage(activeCostume);
+        }
         GreenfootImage img = getImage();
         int sizer = -2;
         img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10); // Upscales the costume by 2%
@@ -306,7 +335,7 @@ public class Player extends Mover
         }
         
         setImage(img);
-        if (!life) {
+        if (flashed) {
             grayify();
         }
     }
