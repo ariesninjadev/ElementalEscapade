@@ -52,7 +52,6 @@ public class TileMap
     
     public static Tile getTile(Integer num)
     {
-        System.out.println(num);
         if (num == 0 || num > 2000) {
             return null;
         }

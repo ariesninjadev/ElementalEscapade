@@ -23,8 +23,13 @@ public class Mover extends Actor {
     
     public void orient(boolean bool) {}
 
-    protected void jump() {
+    public void jump() {
         setVSpeed(-jumpStrength);
+        fall();
+    }
+    
+    public void launch() {
+        setVSpeed(-jumpStrength*2);
         fall();
     }
 

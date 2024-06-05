@@ -48,7 +48,9 @@ class Zone {
 public class Game extends World
 {
 
-    Player me;
+    private boolean DEBUG = false;
+    
+    public Player me;
     Partner you;
     
     Static pressE;
@@ -82,8 +84,11 @@ public class Game extends World
     
     // Audio
     public Audio gameMusic = new Audio("earth-bgm.wav");
+    public Audio bossMusic = new Audio("air-bgm.wav");
     private int cVol = 36;
+    private int cVolBoss = 0;
     private boolean canLoopDown = false;
+    private boolean canLoopDownBoss = true;
     
     // Event Regions
     public ArrayList<Zone> zones = new ArrayList<>();
@@ -131,11 +136,9 @@ public class Game extends World
     
     public void act() {
         
-        //System.out.println(cVol);
-        
         MouseInfo mouse = Greenfoot.getMouseInfo();
         
-        if (mouse != null) {
+        if (mouse != null && DEBUG) {
             showText(mouse.getX() + ", " + mouse.getY(), 50, 20);
         }
         
@@ -190,6 +193,7 @@ public class Game extends World
             cVol = 0;
             gameMusic.setVolume(0);
             canLoopDown = true;
+            canLoopDownBoss = true;
             Audio.playSound("level-up.wav");
             stage++;
             fadeStage = 1;
@@ -216,7 +220,10 @@ public class Game extends World
             me.cancelIdle();
             me.life = true;
             resetFade();
-            canLoopDown = false;
+            if (stage != 4) {
+                canLoopDown = false;
+            }
+            canLoopDownBoss = false;
             //gameMusic.setVolume(50);
             //cVol = 50;
             if (reviving) {
@@ -237,6 +244,13 @@ public class Game extends World
         } else if (cVol < 36) {
             cVol += 2;
             gameMusic.setVolume(cVol);
+        }
+        if (canLoopDownBoss && cVolBoss >= 0) {
+            cVolBoss -= 2;
+            bossMusic.setVolume(cVolBoss);
+        } else if (cVolBoss < 36) {
+            cVolBoss += 2;
+            bossMusic.setVolume(cVolBoss);
         }
     }
     
@@ -350,6 +364,8 @@ public class Game extends World
     
     public void earth3() {
         loadWorld(Data.earth3);
+        addObject(new SmallEnemy("sand-snake.png"),330,260);
+        addObject(new SmallEnemy("sand-snake.png"),230,140);
         keyReq = 3;
         me.waterProtected = false;
         me.vSpeed = 0;
@@ -380,6 +396,57 @@ public class Game extends World
         zones.add(zone3);
     }
     
+    public void earthBoss() {
+        loadWorld(Data.earthX);
+        addObject(new Boss("Wicked-worm-idle-1.png"),330,260);
+        keyReq = 1;
+        me.waterProtected = false;
+        me.vSpeed = 0;
+        recastPlayer(30,320);
+        List<Orb> orbs = getObjects(Orb.class);
+        for (Orb orb : orbs) {
+            this.orb = orb;
+        }
+        canLoopDown = true;
+        canLoopDownBoss = false;
+        new java.util.Timer().schedule( 
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    bossMusic.playLoop();
+                }
+            }, 
+            900 
+        );
+    }
+    
+    public void endBoss() {
+        noAnimate = true;
+        me.invulnerabilityClock = 500;
+        me.movementLocked = true;
+        me.vSpeed = 0;
+        canLoopDownBoss = true;
+        new java.util.Timer().schedule( 
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    Audio.playSound("win.wav");
+                    new java.util.Timer().schedule( 
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    me.movementLocked = false;
+                    keyObtained();
+                }
+            }, 
+            2400 
+        );
+                }
+            }, 
+            1200 
+        );
+    }
+    
     public void end1() {
         loadWorld(Data.lobby);
         keyReq = 3;
@@ -406,6 +473,9 @@ public class Game extends World
                 earth3();
                 break;
             case 4:
+                earthBoss();
+                break;
+            case 5:
                 end1();
                 break;
         }
@@ -414,6 +484,7 @@ public class Game extends World
     public void restartLevel() {
         //gameMusic.stop();
         canLoopDown = true;
+        canLoopDownBoss = true;
         Orb.locked = true;
         keyReq = 3;
         new java.util.Timer().schedule( 
@@ -477,11 +548,13 @@ public class Game extends World
         List<Text> u2 = getObjects(Text.class);
         List<Static> u3 = getObjects(Static.class);
         List<SmallEnemy> u4 = getObjects(SmallEnemy.class);
+        List<Boss> u5 = getObjects(Boss.class);
         List<Actor> objects = new ArrayList<>();
         objects.addAll(u1);
         objects.addAll(u2);
         objects.addAll(u3);
         objects.addAll(u4);
+        objects.addAll(u5);
         removeObjects(objects);
     }
     

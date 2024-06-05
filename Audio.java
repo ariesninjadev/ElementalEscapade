@@ -50,6 +50,7 @@ public class Audio
             Greenfoot.playSound(a);
         } catch (Exception e) {
             userHasSoundCard = false;
+            System.out.println(e);
         }
     }
 }

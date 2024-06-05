@@ -99,7 +99,7 @@ public class Player extends Mover
             }
         }
         if (walkClock >= 5 || (sprinting && walkClock >= 3)) {
-            if ((leftPressed || rightPressed)) {
+            if ((leftPressed || rightPressed) && !movementLocked) {
                 walkClock = 0;
                 walkState = (walkState % 4) + 1;
                 orient();
@@ -170,6 +170,9 @@ public class Player extends Mover
     {
         // Don't check keys on animations, cutscenes, etc.
         if (movementLocked) {
+            sprinting = false;
+            idle = false;
+            walkState = 0;
             return;
         }
 
@@ -406,11 +409,13 @@ public class Player extends Mover
         }
         if (life) {
             life = false;
+            Audio.playSound("damage.wav");
             orient();
             invulnerable = true;
             invulnerabilityClock = 150;
         } else if (! dead) {
             Game game=(Game) getWorld();
+            Audio.playSound("damage.wav");
             game.restartLevel();
             lockedMover = true;
             movementLocked = true;
@@ -423,6 +428,7 @@ public class Player extends Mover
     public void checkEnemyCollision()
     {
         List<SmallEnemy> e1 = getIntersectingObjects(SmallEnemy.class);
+        List<Boss> e3 = getIntersectingObjects(Boss.class);
         List<RocksHanging> e2 = getIntersectingObjects(RocksHanging.class);
         if (e1.size() > 0) {
             takeDamage();
@@ -430,6 +436,12 @@ public class Player extends Mover
         }
         for (RocksHanging rock : e2) {
             if (!rock.onGround) {
+                takeDamage();
+            }
+        }
+        for (Boss biggie : e3) {
+            if (biggie.attacking && biggie.predictedContact)
+            {
                 takeDamage();
             }
         }
