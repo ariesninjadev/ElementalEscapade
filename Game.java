@@ -1,4 +1,4 @@
-import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import greenfoot.*; // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 import java.util.List;
 import java.util.ArrayList;
 
@@ -21,10 +21,18 @@ class Point {
 
     public void move(Direction direction) {
         switch (direction) {
-            case RIGHT: x++; break;
-            case DOWN: y++; break;
-            case LEFT: x--; break;
-            case UP: y--; break;
+            case RIGHT:
+                x++;
+                break;
+            case DOWN:
+                y++;
+                break;
+            case LEFT:
+                x--;
+                break;
+            case UP:
+                y--;
+                break;
         }
     }
 }
@@ -35,7 +43,7 @@ class Zone {
     int height;
     int width;
     ArrayList<Tile> tiles;
-    
+
     public Zone(int x, int y, int height, int width, ArrayList<Tile> tiles) {
         this.x = x;
         this.y = y;
@@ -45,43 +53,42 @@ class Zone {
     }
 }
 
-public class Game extends World
-{
+public class Game extends World {
 
     private boolean DEBUG = false;
-    
+
     public Player me;
     Partner you;
-    
+
     Static pressE;
-    
+
     boolean gameIsMultiplayer = false;
-    
+
     TextEngine text = new TextEngine(this);
     StaticEngine stat = new StaticEngine(this);
-    
+
     int stage = 0;
-    
+
     int playerNum = 0;
-    
+
     Orb orb;
     int keyReq = 0;
-    
+
     boolean reviving = false;
-    
+
     // Lobby
     boolean inRange = false;
     boolean arrowShown = false;
-    
+
     // Fade Transition
     int fadeStage = 0;
     BlackOverlay[] fadeStorage = new BlackOverlay[96];
     int step = 0;
     Direction direction = Direction.RIGHT;
     Point current = new Point(0, 0);
-    int[][] bounds = {{12, 9}, {-2, -1}};
+    int[][] bounds = { { 12, 9 }, { -2, -1 } };
     public boolean noAnimate = false;
-    
+
     // Audio
     public Audio gameMusic = new Audio("earth-bgm.wav");
     public Audio bossMusic = new Audio("air-bgm.wav");
@@ -89,97 +96,102 @@ public class Game extends World
     private int cVolBoss = 0;
     private boolean canLoopDown = false;
     private boolean canLoopDownBoss = true;
-    
+
     // Event Regions
     public ArrayList<Zone> zones = new ArrayList<>();
     
-    
-    public Game(boolean mp) throws java.io.IOException
-    {    
-        super(600, 400, 1, false); 
-        
+    // Text Builder
+    private String endC = "";
+    private String endFull = "Thanks for playing!";
+    private int etClock = -250;
+
+    public Game(boolean mp) throws java.io.IOException {
+        super(600, 400, 1, false);
+
         gameIsMultiplayer = mp;
-        
+
         lobby();
 
-        new java.util.Timer().schedule( 
-            new java.util.TimerTask() 
-            {
-                @Override
-                public void run() {
-                    gameMusic.playLoop();
-                    cVol = 36;
-                    gameMusic.setVolume(36);
-                }
-            }, 
-            500
-        );
-        
-
-    }
-    
-    public void keyObtained() {
-        keyReq--;
-        if (keyReq == 0) {
-            new java.util.Timer().schedule( 
+        new java.util.Timer().schedule(
                 new java.util.TimerTask() {
                     @Override
                     public void run() {
-                        Orb.locked = false;
-                        Audio.playSound("portal-unlocked.wav");
+                        gameMusic.playLoop();
+                        cVol = 36;
+                        gameMusic.setVolume(36);
                     }
-                }, 
-                900
-            );
+                },
+                500);
+
+    }
+
+    public void keyObtained() {
+        keyReq--;
+        if (keyReq == 0) {
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            Orb.locked = false;
+                            Audio.playSound("portal-unlocked.wav");
+                        }
+                    },
+                    900);
         }
     }
-    
+
     public void act() {
-        
+
         MouseInfo mouse = Greenfoot.getMouseInfo();
-        
+
         if (mouse != null && DEBUG) {
             showText(mouse.getX() + ", " + mouse.getY(), 50, 20);
         }
-        
-        switch(stage) {
-            
+
+        switch (stage) {
+
             case 0: // LOBBY
                 try {
                     if (you.getY() != 1000 && playerNum == 1 && !arrowShown) {
-                        //System.out.println(you.getY());
-                        stat.show("darrow.png",550,290,"hover");
+                        // System.out.println(you.getY());
+                        stat.show("darrow.png", 550, 290, "hover");
                         arrowShown = true;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
                 break;
-                
+            case 5:
+                showText(endC, 300, 250);
+                etClock++;
+                if (etClock == 4 && endC.length() < endFull.length()) {
+                    etClock = 0;
+                    endC += endFull.charAt(endC.length());
+                }
+                break;
             default:
                 break;
-                
+
         }
-        
+
         for (Zone zone : zones) {
-            if (me.getX() > zone.x && 
-                me.getX() < zone.x+zone.width && 
-                me.getY() > zone.y &&  
-                me.getY() < zone.y+zone.height) 
-            {
+            if (me.getX() > zone.x &&
+                    me.getX() < zone.x + zone.width &&
+                    me.getY() > zone.y &&
+                    me.getY() < zone.y + zone.height) {
                 for (Tile tile : zone.tiles) {
                     tile.event();
                 }
             }
         }
-        
-        if (me.getX() > orb.getX()-25 && 
-            me.getX() < orb.getX()+25 && 
-            me.getY() > orb.getY()-25 &&  
-            me.getY() < orb.getY()+25 && 
-            arrowShown && 
-            keyReq == 0)
-        {
+
+        if (me.getX() > orb.getX() - 25 &&
+                me.getX() < orb.getX() + 25 &&
+                me.getY() > orb.getY() - 25 &&
+                me.getY() < orb.getY() + 25 &&
+                arrowShown &&
+                keyReq == 0) {
             if (!inRange) {
-                pressE = stat.show("press-e.png",534,10);
+                pressE = stat.show("press-e.png", 534, 10);
                 inRange = true;
             }
         } else if (inRange) {
@@ -200,7 +212,7 @@ public class Game extends World
         }
 
         if (fadeStage == 1 && step < 96) {
-            Greenfoot.setSpeed( 56 );
+            Greenfoot.setSpeed(56);
             fadeOut();
             noAnimate = true;
         } else if (fadeStage == 1 && step == 96) {
@@ -216,7 +228,9 @@ public class Game extends World
             fadeStage = 0;
             step = 0;
             noAnimate = false;
-            me.movementLocked = false;
+            if (stage != 5) {
+                me.movementLocked = false;
+            }
             me.cancelIdle();
             me.life = true;
             resetFade();
@@ -224,19 +238,19 @@ public class Game extends World
                 canLoopDown = false;
             }
             canLoopDownBoss = false;
-            //gameMusic.setVolume(50);
-            //cVol = 50;
+            // gameMusic.setVolume(50);
+            // cVol = 50;
             if (reviving) {
-                //System.out.println("asd");
+                // System.out.println("asd");
                 reviving = false;
-                //gameMusic.playLoop();
+                // gameMusic.playLoop();
                 me.hasDrowned = false;
             }
         } else if (fadeStage == 2 && step < 96) {
-            Greenfoot.setSpeed( 56 );
+            Greenfoot.setSpeed(56);
             fadeIn();
         } else {
-            Greenfoot.setSpeed( 47 );
+            Greenfoot.setSpeed(47);
         }
         if (canLoopDown && cVol >= 0) {
             cVol -= 2;
@@ -253,45 +267,45 @@ public class Game extends World
             bossMusic.setVolume(cVolBoss);
         }
     }
-    
+
     // LEVELS
-    
+
     public void lobby() throws java.io.IOException {
         GreenfootImage background = getBackground();
-        background.setColor(new Color(212,245,255));
-        background.fillRect(0,0,getWidth(),getHeight());
-        
+        background.setColor(new Color(212, 245, 255));
+        background.fillRect(0, 0, getWidth(), getHeight());
+
         loadWorld(Data.lobby);
-        
+
         me = new Player();
         addObject(me, 0, 1000);
-        
+
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
-        
+
         Orb.locked = false;
-        
-        setPaintOrder(BlackOverlay.class,GrassBlade.class,Player.class);
-        
+
+        setPaintOrder(Static.class, Text.class, BlackOverlay.class, GrassBlade.class, Player.class);
+
         if (gameIsMultiplayer) {
-            
+
             you = new Partner();
             addObject(you, 0, 1000);
             String input = Greenfoot.ask("Game to join");
             String response = Network.joinGame(input);
-            
+
             if (response.equals("-1")) {
-                text.show("Can't connect to the server!", 300, 20, Color.ORANGE, new Color(0,0,0), 24);
+                text.show("Can't connect to the server!", 300, 20, Color.ORANGE, new Color(0, 0, 0), 24);
                 Greenfoot.stop();
                 return;
             } else if (response.equals("0")) {
-                text.show("This game is full!", 300, 20, Color.ORANGE, new Color(0,0,0), 24);
+                text.show("This game is full!", 300, 20, Color.ORANGE, new Color(0, 0, 0), 24);
                 Greenfoot.stop();
                 return;
             } else if (response.equals("1")) {
-                text.show(" Joined as player 1. ", 300, 20, Color.RED, new Color(0,0,0), 24);
+                text.show(" Joined as player 1. ", 300, 20, Color.RED, new Color(0, 0, 0), 24);
                 me.init("player");
                 you.init("partner");
                 me.setLocation(280, 200);
@@ -299,7 +313,7 @@ public class Game extends World
                 me.startLocalPost();
                 you.partnerGet();
             } else if (response.equals("2")) {
-                text.show(" Joined as player 2. ", 300, 20, Color.BLUE, new Color(0,0,0), 24);
+                text.show(" Joined as player 2. ", 300, 20, Color.BLUE, new Color(0, 0, 0), 24);
                 me.init("partner");
                 you.init("player");
                 me.setLocation(320, 200);
@@ -307,39 +321,39 @@ public class Game extends World
                 me.startLocalPost();
                 you.partnerGet();
             } else {
-                text.show("There was an error.", 300, 20, Color.ORANGE, new Color(0,0,0), 24);
+                text.show("There was an error.", 300, 20, Color.ORANGE, new Color(0, 0, 0), 24);
             }
-            
+
         } else {
             me.setLocation(300, 200);
-            stat.show("darrow.png",550,290,"hover");
+            stat.show("darrow.png", 550, 290, "hover");
             arrowShown = true;
         }
     }
-    
+
     public void earth1() {
         loadWorld(Data.earth1);
         keyReq = 3;
         me.waterProtected = false;
-        recastPlayer(30,320);
+        recastPlayer(30, 320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
     }
-    
+
     public void earth2() {
         loadWorld(Data.earth2);
-        addObject(new SmallEnemy("sand-snake.png"),230,30);
+        addObject(new SmallEnemy("sand-snake.png"), 230, 30);
         keyReq = 3;
         me.waterProtected = false;
         me.vSpeed = 0;
-        recastPlayer(30,320);
+        recastPlayer(30, 320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
-        
+
         // Rocks
         ArrayList<Tile> group1 = new ArrayList<>();
         ArrayList<Tile> group2 = new ArrayList<>();
@@ -347,11 +361,11 @@ public class Game extends World
         List<RocksHanging> allRocks = getObjects(RocksHanging.class);
         for (RocksHanging rock : allRocks) {
             if (rock.getX() > 410) {
-                group1.add((Tile)rock);
+                group1.add((Tile) rock);
             } else if (rock.getX() > 330) {
-                group2.add((Tile)rock);
+                group2.add((Tile) rock);
             } else {
-                group3.add((Tile)rock);
+                group3.add((Tile) rock);
             }
         }
         Zone zone1 = new Zone(380, 280, 80, 40, group1);
@@ -361,31 +375,31 @@ public class Game extends World
         zones.add(zone2);
         zones.add(zone3);
     }
-    
+
     public void earth3() {
         loadWorld(Data.earth3);
-        addObject(new SmallEnemy("sand-snake.png"),330,260);
-        addObject(new SmallEnemy("sand-snake.png"),230,140);
+        addObject(new SmallEnemy("sand-snake.png"), 330, 260);
+        addObject(new SmallEnemy("sand-snake.png"), 230, 140);
         keyReq = 3;
         me.waterProtected = false;
         me.vSpeed = 0;
-        recastPlayer(30,320);
+        recastPlayer(30, 320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
-        
+
         ArrayList<Tile> group1 = new ArrayList<>();
         ArrayList<Tile> group2 = new ArrayList<>();
         ArrayList<Tile> group3 = new ArrayList<>();
         List<RocksHanging> allRocks = getObjects(RocksHanging.class);
         for (RocksHanging rock : allRocks) {
             if (rock.getX() > 360) {
-                group1.add((Tile)rock);
+                group1.add((Tile) rock);
             } else if (rock.getX() > 280) {
-                group2.add((Tile)rock);
+                group2.add((Tile) rock);
             } else {
-                group3.add((Tile)rock);
+                group3.add((Tile) rock);
             }
         }
         Zone zone1 = new Zone(400, 40, 240, 20, group1);
@@ -395,71 +409,70 @@ public class Game extends World
         zones.add(zone2);
         zones.add(zone3);
     }
-    
+
     public void earthBoss() {
         loadWorld(Data.earthX);
-        addObject(new Boss("Wicked-worm-idle-1.png"),330,260);
+        addObject(new Boss("Wicked-worm-idle-1.png"), 330, 260);
         keyReq = 1;
         me.waterProtected = false;
         me.vSpeed = 0;
-        recastPlayer(30,320);
+        recastPlayer(30, 320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
         canLoopDown = true;
         canLoopDownBoss = false;
-        new java.util.Timer().schedule( 
-            new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    bossMusic.playLoop();
-                }
-            }, 
-            900 
-        );
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        bossMusic.playLoop();
+                    }
+                },
+                900);
     }
-    
+
     public void endBoss() {
         noAnimate = true;
         me.invulnerabilityClock = 500;
         me.movementLocked = true;
         me.vSpeed = 0;
         canLoopDownBoss = true;
-        new java.util.Timer().schedule( 
-            new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    Audio.playSound("win.wav");
-                    new java.util.Timer().schedule( 
-            new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    me.movementLocked = false;
-                    keyObtained();
-                }
-            }, 
-            2400 
-        );
-                }
-            }, 
-            1200 
-        );
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        Audio.playSound("win.wav");
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        me.movementLocked = false;
+                                        keyObtained();
+                                    }
+                                },
+                                2400);
+                    }
+                },
+                1200);
     }
-    
+
     public void end1() {
+        bossMusic.stop();
         loadWorld(Data.lobby);
         keyReq = 3;
         me.waterProtected = true;
-        recastPlayer(30,320);
+        me.switchCostume("player-idle.png");
+        recastPlayer(21, 320);
         List<Orb> orbs = getObjects(Orb.class);
         for (Orb orb : orbs) {
             this.orb = orb;
         }
     }
-    
+
     // -------------------------------------------------- //
-    
+
     public void bootLevel(int lvl) {
         Key.v = -1;
         switch (lvl) {
@@ -480,69 +493,65 @@ public class Game extends World
                 break;
         }
     }
-    
+
     public void restartLevel() {
-        //gameMusic.stop();
+        // gameMusic.stop();
         canLoopDown = true;
         canLoopDownBoss = true;
         Orb.locked = true;
         keyReq = 3;
-        new java.util.Timer().schedule( 
-            new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    Audio.playSound("lose.wav"); 
-                    new java.util.Timer().schedule( 
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                reviving = true;
-                                fadeStage = 1;
-                                me.movementLocked = true;
-                            }
-                        }, 
-                        700 
-                    );
-                }
-            }, 
-            1000 
-        );
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        Audio.playSound("lose.wav");
+                        new java.util.Timer().schedule(
+                                new java.util.TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        reviving = true;
+                                        fadeStage = 1;
+                                        me.movementLocked = true;
+                                    }
+                                },
+                                700);
+                    }
+                },
+                1000);
     }
-    
+
     public void recastPlayer(int x, int y) {
         me.waterDeath = false;
         me.lockedMover = false;
         if (gameIsMultiplayer) {
-            int z = (playerNum==1) ? -1 : 1;
-            me.setLocation(x+(16*z), y);
+            int z = (playerNum == 1) ? -1 : 1;
+            me.setLocation(x + (16 * z), y);
         } else {
             me.setLocation(x, y);
         }
     }
-    
+
     public void loadWorld(int[][] num) {
-        for (int i=0;i<num.length;i++)
-        {
-            for (int g=0;g<num[i].length;g++)
-            {
-                int x=g*20+10;
-                int y=i*20+10;
+        for (int i = 0; i < num.length; i++) {
+            for (int g = 0; g < num[i].length; g++) {
+                int x = g * 20 + 10;
+                int y = i * 20 + 10;
                 Tile tile = TileMap.getTile(num[i][g]);
-                if (tile!=null)
-                {
-                    addObject(tile,x,y);
+                if (tile != null) {
+                    addObject(tile, x, y);
                 }
             }
         }
     }
-    
+
     public void stopped() {
         try {
-        me.stopLocalPost();
-        you.stopGet();
-        } catch (Exception e) {}
+            me.stopLocalPost();
+            you.stopGet();
+        } catch (Exception e) {
+        }
     }
-    
+
     public void unload() {
         List<Tile> u1 = getObjects(Tile.class);
         List<Text> u2 = getObjects(Text.class);
@@ -557,10 +566,10 @@ public class Game extends World
         objects.addAll(u5);
         removeObjects(objects);
     }
-    
+
     public void fadeOut() {
         fadeStorage[step] = new BlackOverlay();
-        addObject(fadeStorage[step], current.x*50+25, current.y*50+25);
+        addObject(fadeStorage[step], current.x * 50 + 25, current.y * 50 + 25);
         if (reachedBoundary()) {
             direction = direction.next();
             updateBounds();
@@ -571,36 +580,48 @@ public class Game extends World
 
     public void fadeIn() {
         if (step >= 0) {
-            removeObject(fadeStorage[95-step]);
-            fadeStorage[95-step] = null;
+            removeObject(fadeStorage[95 - step]);
+            fadeStorage[95 - step] = null;
             step--;
         }
     }
-    
+
     private void resetFade() {
         fadeStorage = new BlackOverlay[96];
         step = 0;
         direction = Direction.RIGHT;
         current = new Point(0, 0);
-        bounds = new int[][]{{12, 9}, {-2, -1}};
+        bounds = new int[][] { { 12, 9 }, { -2, -1 } };
     }
-    
+
     private boolean reachedBoundary() {
         switch (direction) {
-            case RIGHT: return current.x+1 == bounds[0][0];
-            case DOWN: return current.y+1 == bounds[0][1];
-            case LEFT: return current.x-1 == bounds[1][0];
-            case UP: return current.y-1 == bounds[1][1];
+            case RIGHT:
+                return current.x + 1 == bounds[0][0];
+            case DOWN:
+                return current.y + 1 == bounds[0][1];
+            case LEFT:
+                return current.x - 1 == bounds[1][0];
+            case UP:
+                return current.y - 1 == bounds[1][1];
         }
         return false;
     }
-    
+
     private void updateBounds() {
         switch (direction) {
-            case RIGHT: bounds[0][0]--; break;
-            case DOWN: bounds[0][1]--; break;
-            case LEFT: bounds[1][0]++; break;
-            case UP: bounds[1][1]++; break;
+            case RIGHT:
+                bounds[0][0]--;
+                break;
+            case DOWN:
+                bounds[0][1]--;
+                break;
+            case LEFT:
+                bounds[1][0]++;
+                break;
+            case UP:
+                bounds[1][1]++;
+                break;
         }
     }
 }

@@ -4,8 +4,7 @@ import java.util.List;
 /**
  * A little penguin that wants to get to the other side.
  */
-public class Player extends Mover
-{
+public class Player extends Mover {
 
     public static final int speed = 2; // Player speed
 
@@ -22,7 +21,7 @@ public class Player extends Mover
     private int sprintClock = 0; // Timer to check the time between presses of a key
 
     // Idle States
-    private boolean idle = true;
+    public boolean idle = true;
     private int idleClock = 0;
     private boolean idleAnim = false;
     public boolean dead = false;
@@ -41,19 +40,20 @@ public class Player extends Mover
 
     // Misc
     private boolean done = false; // Is the player finished with the current scene?
-    private Actor uw; // The next tile the player would land on if they were grounded (used for waterborder)
+    private Actor uw; // The next tile the player would land on if they were grounded (used for
+                      // waterborder)
     public boolean waterProtected = true; // Are we prevented from falling into water?
     private int epicenter = 0; // Some costumes require us to recenter the player
     public boolean movementLocked = false;
     private int walkAudioFileClock = 0; // Clock to regulate the frequency of a walk sound playing
-    
+
     // Health
     public boolean life = true; // True = 2 lives left, False = 1 life left
     public boolean invulnerable = true; // Are we invulnerable?
     public int invulnerabilityClock = 0; // How many more ticks are we invulnerable for
     public boolean lockedMover = false; // If true, all collision checks are disabled (animations)
     public boolean waterDeath = false;
-    
+
     public Player() {
         orient(); // Update costume size and direction on start
     }
@@ -65,14 +65,13 @@ public class Player extends Mover
     }
 
     // 20ms delayed loop
-    public void act() 
-    {
+    public void act() {
 
-        //System.out.println(dead);
-        
-        uw = upcomingWalkable(facing,distFromFloor()); // Update lookahead
+        // System.out.println(dead);
 
-        //Update clocks
+        uw = upcomingWalkable(facing, distFromFloor()); // Update lookahead
+
+        // Update clocks
         idleClock++;
         walkAudioFileClock++;
         flashClock++;
@@ -107,18 +106,18 @@ public class Player extends Mover
                 walkState = 0;
             }
         }
-        
+
         if (dead) {
             fallNoColl();
         }
-        
+
         // Stop checks if we are locked
         if (lockedMover) {
             return;
         }
 
         checkKeys(); // Check all keypresses
-        
+
         checkEnemyCollision();
 
         // Watch for a floor if we are falling or a roof if we are rising
@@ -136,20 +135,20 @@ public class Player extends Mover
         // Switch to the idle animation after 120 frames of inactivity
         if (idle && idleClock > 120 && !idleAnim) {
             idleAnim = true;
-            switchCostume(whoAmI+"-idle.png");
+            switchCostume(whoAmI + "-idle.png");
             Audio.playSound("pickup-torch.wav");
             orient(facing);
             int s = facing ? -1 : 1; // Convert direction boolean to -1 or 1
             epicenter = -3;
-            setLocation(getX()-(2*s),getY()-4); // Account for the difference in size
+            setLocation(getX() - (2 * s), getY() - 4); // Account for the difference in size
         } else if (!idle && idleAnim) {
             idleAnim = false;
-            switchCostume(whoAmI+"-still.png");
+            switchCostume(whoAmI + "-still.png");
             Audio.playSound("put-away-torch.wav");
             orient();
             int s = facing ? -1 : 1;
             epicenter = 0;
-            setLocation(getX()+(2*s),getY()+4);
+            setLocation(getX() + (2 * s), getY() + 4);
         }
 
         // If our direction and costume orientation disagree, update the costume
@@ -160,14 +159,13 @@ public class Player extends Mover
 
         if (!dead && atBottom() && !lockedMover && waterDeath) {
             dead = true;
-            ((Game)getWorld()).restartLevel(); 
+            ((Game) getWorld()).restartLevel();
         }
 
     }
 
     // Scan for keypresses
-    private void checkKeys()
-    {
+    private void checkKeys() {
         // Don't check keys on animations, cutscenes, etc.
         if (movementLocked) {
             sprinting = false;
@@ -240,9 +238,9 @@ public class Player extends Mover
         }
 
         // If the space key is pressed
-        if (Greenfoot.isKeyDown("space"))
-        {
-            // If space is already pressed our we hit our head too recently (headbolt/concussion), cancel
+        if (Greenfoot.isKeyDown("space")) {
+            // If space is already pressed our we hit our head too recently
+            // (headbolt/concussion), cancel
             if (upPressed || headBoltTimer > 0) {
                 return;
             }
@@ -256,7 +254,7 @@ public class Player extends Mover
                 if (this.jumpCount == 0) {
                     Audio.playSound("jump.mp3");
                 } else {
-                    Audio.playSound("jump.mp3");                
+                    Audio.playSound("jump.mp3");
                 }
                 this.jumpCount++;
                 jump();
@@ -264,24 +262,21 @@ public class Player extends Mover
         }
 
         // Keystate
-        if (!Greenfoot.isKeyDown("space"))
-        {
+        if (!Greenfoot.isKeyDown("space")) {
             upPressed = false;
         }
 
         // We are idle if no critical keys are pressed
-        if (!Greenfoot.isKeyDown("space") && 
-        !Greenfoot.isKeyDown("a") && 
-        !Greenfoot.isKeyDown("d") &&
-        onGroundExclusive())
-        {
+        if (!Greenfoot.isKeyDown("space") &&
+                !Greenfoot.isKeyDown("a") &&
+                !Greenfoot.isKeyDown("d") &&
+                onGroundExclusive()) {
             idle = true;
         }
-    }    
+    }
 
     // Check if we are currently falling
-    private void checkFall()
-    {
+    private void checkFall() {
         // If on ground, cancel all velocity and update states
         boolean submerged = submerged();
         if (submerged) {
@@ -294,18 +289,19 @@ public class Player extends Mover
         } else {
             boolean fallResult = fall(); // This will execute the fall method AND check it at the same time
 
-            // Fall returns true if we are still falling. This updates states if we have landed
+            // Fall returns true if we are still falling. This updates states if we have
+            // landed
             if (!fallResult) {
                 this.jumpCount = 0;
                 upPressed = false;
-                //walkAudioFileClock = Integer.MAX_VALUE; // Force a walk sound to play when we land
+                // walkAudioFileClock = Integer.MAX_VALUE; // Force a walk sound to play when we
+                // land
             }
         }
     }
 
     // Check if touching the roof
-    private void checkRoof()
-    {
+    private void checkRoof() {
         // Cancels momentum if we hit a ceiling
         if (touchingCeil()) {
             setVSpeed(0);
@@ -322,21 +318,22 @@ public class Player extends Mover
 
     // Mirror and scale the costume on demand
     public void orient() {
-        if (walkState > 0 && activeCostume.equals(whoAmI+"-still.png")) {
+        if (walkState > 0 && activeCostume.equals(whoAmI + "-still.png")) {
             String walkType = sprinting ? "run" : "walk";
-            setImage(whoAmI+"-"+walkType+"-"+walkState+".png");
+            setImage(whoAmI + "-" + walkType + "-" + walkState + ".png");
         } else {
             setImage(activeCostume);
         }
         GreenfootImage img = getImage();
         int sizer = -2;
-        img.scale(img.getWidth()*(10+(++sizer))/10, img.getHeight()*(10+sizer)/10); // Upscales the costume by 2%
+        img.scale(img.getWidth() * (10 + (++sizer)) / 10, img.getHeight() * (10 + sizer) / 10); // Upscales the costume
+                                                                                                // by 2%
 
         // If we are facing left, mirror the image
         if (!facing) {
             img.mirrorHorizontally();
         }
-        
+
         setImage(img);
         if (flashed) {
             grayify();
@@ -358,14 +355,14 @@ public class Player extends Mover
         walkAudioFileClock = 0;
         Tile on = standingOn();
         if (on != null && on.walkFile() != null) {
-            Audio.playSound(on.walkFile()); 
+            Audio.playSound(on.walkFile());
         }
     }
 
     public boolean exponentialNoise(int num, int gravity, int hardstop) {
         int threshold = 12;
-        for (int i=0;i<hardstop;i++) {
-            if (Greenfoot.getRandomNumber(gravity)==0) {
+        for (int i = 0; i < hardstop; i++) {
+            if (Greenfoot.getRandomNumber(gravity) == 0) {
                 threshold--;
             }
         }
@@ -374,36 +371,29 @@ public class Player extends Mover
 
     // Begin posting our location to the network if on multiplayer.
     // DOCUMENTATION FOR NET NOT PROVIDED
-    public void startLocalPost()
-    {
-        thread = new Thread(new Runnable() 
-            {
-                public void run() 
-                {
-                    while (true) {
-                        try
-                        {
-                            Network.postLocation(getX(),getY(), done);
-                        }
-                        catch (java.io.IOException ioe)
-                        {
-                            ioe.printStackTrace();
-                        }
+    public void startLocalPost() {
+        thread = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Network.postLocation(getX(), getY(), done);
+                    } catch (java.io.IOException ioe) {
+                        ioe.printStackTrace();
                     }
                 }
-            });
+            }
+        });
         thread.start();
     }
 
-    public void stopLocalPost()
-    {
+    public void stopLocalPost() {
         try {
             thread.stop();
-        } catch (java.lang.NullPointerException npe) {}
+        } catch (java.lang.NullPointerException npe) {
+        }
     }
 
-    public void takeDamage()
-    {
+    public void takeDamage() {
         if (invulnerable) {
             return;
         }
@@ -413,8 +403,8 @@ public class Player extends Mover
             orient();
             invulnerable = true;
             invulnerabilityClock = 150;
-        } else if (! dead) {
-            Game game=(Game) getWorld();
+        } else if (!dead) {
+            Game game = (Game) getWorld();
             Audio.playSound("damage.wav");
             game.restartLevel();
             lockedMover = true;
@@ -424,9 +414,8 @@ public class Player extends Mover
             dead = true;
         }
     }
-    
-    public void checkEnemyCollision()
-    {
+
+    public void checkEnemyCollision() {
         List<SmallEnemy> e1 = getIntersectingObjects(SmallEnemy.class);
         List<Boss> e3 = getIntersectingObjects(Boss.class);
         List<RocksHanging> e2 = getIntersectingObjects(RocksHanging.class);
@@ -440,41 +429,37 @@ public class Player extends Mover
             }
         }
         for (Boss biggie : e3) {
-            if (biggie.attacking && biggie.predictedContact)
-            {
+            if (biggie.attacking && biggie.predictedContact) {
                 takeDamage();
             }
         }
     }
-    
+
     public void grayify() {
         GreenfootImage img = getImage();
-        for(int i=0; i<img.getWidth(); i++)
-        {
-            for(int j=0; j<img.getHeight(); j++)
-            {
-                Color col=img.getColorAt(i,j);
+        for (int i = 0; i < img.getWidth(); i++) {
+            for (int j = 0; j < img.getHeight(); j++) {
+                Color col = img.getColorAt(i, j);
                 if (col.getAlpha() == 0) {
-                    img.setColorAt(i,j,new Color(0,0,0,0));
+                    img.setColorAt(i, j, new Color(0, 0, 0, 0));
                 } else {
-                    int r=col.getRed();
-                    int g=col.getGreen();
-                    int b=col.getBlue();
-                    int avg=(r+g+b)/3;
-                    img.setColorAt(i,j,new Color(normalize(avg*2,0,255), avg, avg));
+                    int r = col.getRed();
+                    int g = col.getGreen();
+                    int b = col.getBlue();
+                    int avg = (r + g + b) / 3;
+                    img.setColorAt(i, j, new Color(normalize(avg * 2, 0, 255), avg, avg));
                 }
             }
             setImage(img);
         }
     }
-    
+
     private int normalize(int num, int min, int max) {
-        if (num<min) {
+        if (num < min) {
             num = min;
-        } else if (num>max) {
+        } else if (num > max) {
             num = max;
         }
         return num;
     }
 }
- 
