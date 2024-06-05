@@ -288,6 +288,12 @@ public class Game extends World {
         Orb.locked = false;
 
         setPaintOrder(Static.class, Text.class, BlackOverlay.class, GrassBlade.class, Player.class);
+        
+        text.show("Controls:", 30, 10, Color.ORANGE, new Color(0, 0, 0,0), 16);
+        text.show("Space to Jump", 48, 24, Color.RED, new Color(0, 0, 0,0), 16);
+        text.show("A and D to move", 50, 38, Color.RED, new Color(0, 0, 0,0), 16);
+        text.show("Space twice to double jump", 78, 52, Color.BLUE, new Color(0, 0, 0,0), 16);
+        text.show("A or D twice to sprint", 66, 66, Color.BLUE, new Color(0, 0, 0,0), 16);
 
         if (gameIsMultiplayer) {
 
